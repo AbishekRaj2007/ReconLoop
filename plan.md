@@ -214,14 +214,14 @@ Dates are a guide, not handcuffs — you're a student with classes. The order of
 ### Phase 0 — Repo Scaffold & Environment
 **Objective:** A clean, runnable skeleton before any logic is written.
 
-- [ ] Initialize git repo, add `.gitignore` (Python + Node + `.env`)
-- [ ] Create directory structure exactly as in §7
-- [ ] `backend/`: Python venv, `requirements.txt` (fastapi, uvicorn, pandas, rapidfuzz, sqlalchemy, psycopg2-binary, pydantic, python-dotenv, groq, anthropic, pytest, pytest-cov)
-- [ ] `frontend/`: `npx create-next-app@latest` with TypeScript + Tailwind
-- [ ] `.env.example` with `GROQ_API_KEY`, `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`), `DATABASE_URL`
-- [ ] `config/matching_config.yaml` with placeholder tolerances (see §11)
-- [ ] Postgres running locally (Docker or native) with an empty `reconloop` database
-- [ ] README stub with project one-liner and setup instructions
+- [x] Initialize git repo, add `.gitignore` (Python + Node + `.env`)
+- [x] Create directory structure exactly as in §7
+- [x] `backend/`: Python venv, `requirements.txt` (fastapi, uvicorn, pandas, rapidfuzz, sqlalchemy, psycopg2-binary, pydantic, python-dotenv, groq, anthropic, pytest, pytest-cov)
+- [x] `frontend/`: `npx create-next-app@latest` with TypeScript + Tailwind
+- [x] `.env.example` with `GROQ_API_KEY`, `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`), `DATABASE_URL`
+- [x] `config/matching_config.yaml` with placeholder tolerances (see §11)
+- [x] Postgres running locally (Docker or native) with an empty `reconloop` database
+- [x] README stub with project one-liner and setup instructions
 
 **Deliverable:** `git log` shows an initial commit; `uvicorn app.main:app` returns a health-check 200; Next.js dev server renders a blank page.
 
