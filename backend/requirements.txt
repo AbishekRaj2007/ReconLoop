@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pandas
+rapidfuzz
+sqlalchemy
+psycopg2-binary
+pydantic
+pydantic-settings
+python-dotenv
+groq
+anthropic
+pyyaml
+pytest
+pytest-cov
+black
+ruff
