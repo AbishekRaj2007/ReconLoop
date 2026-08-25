@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: reconloop-postgres
+    environment:
+      POSTGRES_USER: reconloop
+      POSTGRES_PASSWORD: reconloop
+      POSTGRES_DB: reconloop
+    ports:
+      - "5432:5432"
+    volumes:
+      - reconloop-pgdata:/var/lib/postgresql/data
+
+volumes:
+  reconloop-pgdata:
