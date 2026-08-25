@@ -30,8 +30,11 @@ yarn-error.log*
 .env.local
 .env.*.local
 
-# --- Data (generated, gitignored except committed sample) ---
+# --- Data (generated, gitignored except the committed seed=42/count=200 sample) ---
 data/raw/*.csv
+!data/raw/ledger.csv
+!data/raw/bank_statement.csv
+!data/raw/gateway_settlement.csv
 !data/raw/.gitkeep
 
 # --- OS / editor ---

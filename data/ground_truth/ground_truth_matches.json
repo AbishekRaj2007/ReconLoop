@@ -1,0 +1,2570 @@
+[
+  {
+    "true_transaction_id": "GT-0001",
+    "ledger_id": "TXN-000001",
+    "bank_ids": [
+      "0000001"
+    ],
+    "gateway_ids": [
+      "pay_00001"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0002",
+    "ledger_id": "TXN-000002",
+    "bank_ids": [
+      "0000002"
+    ],
+    "gateway_ids": [
+      "pay_00002"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "duplicate_entry",
+    "notes": "Gateway settlement row for pay_00002 appears twice in gateway_settlement.csv (duplicate webhook retry of the same payout); both raw rows correspond to this single true transaction."
+  },
+  {
+    "true_transaction_id": "GT-0003",
+    "ledger_id": "TXN-000003",
+    "bank_ids": [
+      "0000003"
+    ],
+    "gateway_ids": [
+      "pay_00003"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0004",
+    "ledger_id": "TXN-000004",
+    "bank_ids": [
+      "0000004"
+    ],
+    "gateway_ids": [
+      "pay_00004A",
+      "pay_00004B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00004A: \u20b926350.44, pay_00004B: \u20b917566.96) summing exactly to the ledger amount \u20b943917.40 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0005",
+    "ledger_id": "TXN-000005",
+    "bank_ids": [
+      "1000005"
+    ],
+    "gateway_ids": [
+      "pay_00005"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000005 -> 1000005); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0006",
+    "ledger_id": "TXN-000006",
+    "bank_ids": [
+      "1000006"
+    ],
+    "gateway_ids": [
+      "pay_00006"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000006 -> 1000006); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0007",
+    "ledger_id": "TXN-000007",
+    "bank_ids": [
+      "0000007"
+    ],
+    "gateway_ids": [
+      "pay_00007"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0008",
+    "ledger_id": "TXN-000008",
+    "bank_ids": [
+      "0000008"
+    ],
+    "gateway_ids": [
+      "pay_00008"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0009",
+    "ledger_id": "TXN-000009",
+    "bank_ids": [
+      "0000009"
+    ],
+    "gateway_ids": [
+      "pay_00009"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0010",
+    "ledger_id": "TXN-000010",
+    "bank_ids": [
+      "0000010"
+    ],
+    "gateway_ids": [
+      "pay_00010"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0011",
+    "ledger_id": "TXN-000011",
+    "bank_ids": [
+      "1000011"
+    ],
+    "gateway_ids": [
+      "pay_00011"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000011 -> 1000011); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0012",
+    "ledger_id": "TXN-000012",
+    "bank_ids": [
+      "0000012"
+    ],
+    "gateway_ids": [
+      "pay_00012"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b941219.51 -> \u20b940246.73); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0013",
+    "ledger_id": "TXN-000013",
+    "bank_ids": [
+      "1000013"
+    ],
+    "gateway_ids": [
+      "pay_00013"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000013 -> 1000013); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0014",
+    "ledger_id": "TXN-000014",
+    "bank_ids": [
+      "0000014"
+    ],
+    "gateway_ids": [
+      "pay_00014"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0015",
+    "ledger_id": "TXN-000015",
+    "bank_ids": [
+      "0000015"
+    ],
+    "gateway_ids": [
+      "pay_00015"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0016",
+    "ledger_id": "TXN-000016",
+    "bank_ids": [
+      "0000016"
+    ],
+    "gateway_ids": [
+      "pay_00016"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b98412.62 -> \u20b98214.08); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0017",
+    "ledger_id": "TXN-000017",
+    "bank_ids": [
+      "0000017"
+    ],
+    "gateway_ids": [
+      "pay_00017"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0018",
+    "ledger_id": "TXN-000018",
+    "bank_ids": [
+      "1000018"
+    ],
+    "gateway_ids": [
+      "pay_00018"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000018 -> 1000018); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0019",
+    "ledger_id": "TXN-000019",
+    "bank_ids": [
+      "0000019"
+    ],
+    "gateway_ids": [
+      "pay_00019"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0020",
+    "ledger_id": "TXN-000020",
+    "bank_ids": [
+      "0000020"
+    ],
+    "gateway_ids": [
+      "pay_00020"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0021",
+    "ledger_id": "TXN-000021",
+    "bank_ids": [
+      "0000021"
+    ],
+    "gateway_ids": [
+      "pay_00021"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0022",
+    "ledger_id": "TXN-000022",
+    "bank_ids": [
+      "0000022"
+    ],
+    "gateway_ids": [
+      "pay_00022"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0023",
+    "ledger_id": "TXN-000023",
+    "bank_ids": [
+      "0000023"
+    ],
+    "gateway_ids": [
+      "pay_00023"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0024",
+    "ledger_id": "TXN-000024",
+    "bank_ids": [
+      "0000204"
+    ],
+    "gateway_ids": [
+      "pay_00024"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000024 -> 0000204); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0025",
+    "ledger_id": "TXN-000025",
+    "bank_ids": [
+      "0000025"
+    ],
+    "gateway_ids": [
+      "pay_00025"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "duplicate_entry",
+    "notes": "Gateway settlement row for pay_00025 appears twice in gateway_settlement.csv (duplicate webhook retry of the same payout); both raw rows correspond to this single true transaction."
+  },
+  {
+    "true_transaction_id": "GT-0026",
+    "ledger_id": "TXN-000026",
+    "bank_ids": [
+      "0000026"
+    ],
+    "gateway_ids": [
+      "pay_00026"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b946664.63 -> \u20b945563.34); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0027",
+    "ledger_id": "TXN-000027",
+    "bank_ids": [
+      "0000027"
+    ],
+    "gateway_ids": [
+      "pay_00027"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0028",
+    "ledger_id": "TXN-000028",
+    "bank_ids": [
+      "0000208"
+    ],
+    "gateway_ids": [
+      "pay_00028"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000028 -> 0000208); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0029",
+    "ledger_id": "TXN-000029",
+    "bank_ids": [
+      "0000029"
+    ],
+    "gateway_ids": [
+      "pay_00029"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0030",
+    "ledger_id": "TXN-000030",
+    "bank_ids": [
+      "0000030"
+    ],
+    "gateway_ids": [
+      "pay_00030A",
+      "pay_00030B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00030A: \u20b920485.01, pay_00030B: \u20b913656.68) summing exactly to the ledger amount \u20b934141.69 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0031",
+    "ledger_id": "TXN-000031",
+    "bank_ids": [
+      "0000031"
+    ],
+    "gateway_ids": [
+      "pay_00031"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0032",
+    "ledger_id": "TXN-000032",
+    "bank_ids": [
+      "0000302"
+    ],
+    "gateway_ids": [
+      "pay_00032"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000032 -> 0000302); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0033",
+    "ledger_id": "TXN-000033",
+    "bank_ids": [
+      "0000033"
+    ],
+    "gateway_ids": [
+      "pay_00033"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0034",
+    "ledger_id": "TXN-000034",
+    "bank_ids": [
+      "0000034"
+    ],
+    "gateway_ids": [
+      "pay_00034"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0035",
+    "ledger_id": "TXN-000035",
+    "bank_ids": [
+      "0000035"
+    ],
+    "gateway_ids": [
+      "pay_00035"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0036",
+    "ledger_id": "TXN-000036",
+    "bank_ids": [
+      "0000036"
+    ],
+    "gateway_ids": [
+      "pay_00036"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0037",
+    "ledger_id": "TXN-000037",
+    "bank_ids": [
+      "0000037"
+    ],
+    "gateway_ids": [
+      "pay_00037"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0038",
+    "ledger_id": "TXN-000038",
+    "bank_ids": [
+      "0000038"
+    ],
+    "gateway_ids": [
+      "pay_00038A",
+      "pay_00038B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00038A: \u20b916084.24, pay_00038B: \u20b910722.83) summing exactly to the ledger amount \u20b926807.07 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0039",
+    "ledger_id": "TXN-000039",
+    "bank_ids": [
+      "0000039"
+    ],
+    "gateway_ids": [
+      "pay_00039"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0040",
+    "ledger_id": "TXN-000040",
+    "bank_ids": [
+      "0000040"
+    ],
+    "gateway_ids": [
+      "pay_00040"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b945054.08 -> \u20b943990.80); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0041",
+    "ledger_id": "TXN-000041",
+    "bank_ids": [
+      "0000041"
+    ],
+    "gateway_ids": [
+      "pay_00041"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b943099.74 -> \u20b942082.59); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0042",
+    "ledger_id": "TXN-000042",
+    "bank_ids": [
+      "0000042"
+    ],
+    "gateway_ids": [
+      "pay_00042"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0043",
+    "ledger_id": "TXN-000043",
+    "bank_ids": [
+      "0000043"
+    ],
+    "gateway_ids": [
+      "pay_00043"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0044",
+    "ledger_id": "TXN-000044",
+    "bank_ids": [
+      "0000044"
+    ],
+    "gateway_ids": [
+      "pay_00044"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0045",
+    "ledger_id": "TXN-000045",
+    "bank_ids": [
+      "0000045"
+    ],
+    "gateway_ids": [
+      "pay_00045"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b948287.83 -> \u20b947148.24); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0046",
+    "ledger_id": "TXN-000046",
+    "bank_ids": [
+      "0000046"
+    ],
+    "gateway_ids": [
+      "pay_00046"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0047",
+    "ledger_id": "TXN-000047",
+    "bank_ids": [
+      "0000407"
+    ],
+    "gateway_ids": [
+      "pay_00047"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000047 -> 0000407); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0048",
+    "ledger_id": "TXN-000048",
+    "bank_ids": [
+      "0000048"
+    ],
+    "gateway_ids": [
+      "pay_00048"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0049",
+    "ledger_id": "TXN-000049",
+    "bank_ids": [
+      "0000049"
+    ],
+    "gateway_ids": [
+      "pay_00049"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0050",
+    "ledger_id": "TXN-000050",
+    "bank_ids": [
+      "0000500"
+    ],
+    "gateway_ids": [
+      "pay_00050"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000050 -> 0000500); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0051",
+    "ledger_id": "TXN-000051",
+    "bank_ids": [
+      "0000051"
+    ],
+    "gateway_ids": [
+      "pay_00051"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0052",
+    "ledger_id": "TXN-000052",
+    "bank_ids": [
+      "0000052"
+    ],
+    "gateway_ids": [
+      "pay_00052"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0053",
+    "ledger_id": "TXN-000053",
+    "bank_ids": [
+      "0000053"
+    ],
+    "gateway_ids": [
+      "pay_00053"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0054",
+    "ledger_id": "TXN-000054",
+    "bank_ids": [
+      "0000054"
+    ],
+    "gateway_ids": [
+      "pay_00054"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0055",
+    "ledger_id": "TXN-000055",
+    "bank_ids": [
+      "0000055"
+    ],
+    "gateway_ids": [
+      "pay_00055"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0056",
+    "ledger_id": "TXN-000056",
+    "bank_ids": [
+      "0000056"
+    ],
+    "gateway_ids": [
+      "pay_00056"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0057",
+    "ledger_id": "TXN-000057",
+    "bank_ids": [
+      "0000057"
+    ],
+    "gateway_ids": [
+      "pay_00057"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b929776.98 -> \u20b929074.24); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0058",
+    "ledger_id": "TXN-000058",
+    "bank_ids": [
+      "0000058"
+    ],
+    "gateway_ids": [
+      "pay_00058A",
+      "pay_00058B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00058A: \u20b912595.24, pay_00058B: \u20b98396.82) summing exactly to the ledger amount \u20b920992.06 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0059",
+    "ledger_id": "TXN-000059",
+    "bank_ids": [
+      "0000059"
+    ],
+    "gateway_ids": [
+      "pay_00059"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0060",
+    "ledger_id": "TXN-000060",
+    "bank_ids": [
+      "0000060"
+    ],
+    "gateway_ids": [
+      "pay_00060"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0061",
+    "ledger_id": "TXN-000061",
+    "bank_ids": [
+      "0000061"
+    ],
+    "gateway_ids": [
+      "pay_00061"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0062",
+    "ledger_id": "TXN-000062",
+    "bank_ids": [
+      "0000062"
+    ],
+    "gateway_ids": [
+      "pay_00062"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0063",
+    "ledger_id": "TXN-000063",
+    "bank_ids": [
+      "0000063"
+    ],
+    "gateway_ids": [
+      "pay_00063"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0064",
+    "ledger_id": "TXN-000064",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0065",
+    "ledger_id": "TXN-000065",
+    "bank_ids": [
+      "0000605"
+    ],
+    "gateway_ids": [
+      "pay_00065"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000065 -> 0000605); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0066",
+    "ledger_id": "TXN-000066",
+    "bank_ids": [
+      "0000066"
+    ],
+    "gateway_ids": [
+      "pay_00066"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0067",
+    "ledger_id": "TXN-000067",
+    "bank_ids": [
+      "0000607"
+    ],
+    "gateway_ids": [
+      "pay_00067"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000067 -> 0000607); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0068",
+    "ledger_id": "TXN-000068",
+    "bank_ids": [
+      "0000068"
+    ],
+    "gateway_ids": [
+      "pay_00068"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0069",
+    "ledger_id": "TXN-000069",
+    "bank_ids": [
+      "0000069"
+    ],
+    "gateway_ids": [
+      "pay_00069"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0070",
+    "ledger_id": "TXN-000070",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0071",
+    "ledger_id": "TXN-000071",
+    "bank_ids": [
+      "0000071"
+    ],
+    "gateway_ids": [
+      "pay_00071"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0072",
+    "ledger_id": "TXN-000072",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0073",
+    "ledger_id": "TXN-000073",
+    "bank_ids": [
+      "0000073"
+    ],
+    "gateway_ids": [
+      "pay_00073"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0074",
+    "ledger_id": "TXN-000074",
+    "bank_ids": [
+      "0000074"
+    ],
+    "gateway_ids": [
+      "pay_00074"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0075",
+    "ledger_id": "TXN-000075",
+    "bank_ids": [
+      "0000075"
+    ],
+    "gateway_ids": [
+      "pay_00075"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b99884.66 -> \u20b99651.38); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0076",
+    "ledger_id": "TXN-000076",
+    "bank_ids": [
+      "0000076"
+    ],
+    "gateway_ids": [
+      "pay_00076"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0077",
+    "ledger_id": "TXN-000077",
+    "bank_ids": [
+      "0000077"
+    ],
+    "gateway_ids": [
+      "pay_00077"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0078",
+    "ledger_id": "TXN-000078",
+    "bank_ids": [
+      "0000078"
+    ],
+    "gateway_ids": [
+      "pay_00078"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0079",
+    "ledger_id": "TXN-000079",
+    "bank_ids": [
+      "0000079"
+    ],
+    "gateway_ids": [
+      "pay_00079"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0080",
+    "ledger_id": "TXN-000080",
+    "bank_ids": [
+      "0000080"
+    ],
+    "gateway_ids": [
+      "pay_00080A",
+      "pay_00080B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00080A: \u20b92307.97, pay_00080B: \u20b91538.65) summing exactly to the ledger amount \u20b93846.62 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0081",
+    "ledger_id": "TXN-000081",
+    "bank_ids": [
+      "0000081"
+    ],
+    "gateway_ids": [
+      "pay_00081"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0082",
+    "ledger_id": "TXN-000082",
+    "bank_ids": [
+      "0000802"
+    ],
+    "gateway_ids": [
+      "pay_00082"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000082 -> 0000802); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0083",
+    "ledger_id": "TXN-000083",
+    "bank_ids": [
+      "0000083"
+    ],
+    "gateway_ids": [
+      "pay_00083"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0084",
+    "ledger_id": "TXN-000084",
+    "bank_ids": [
+      "0000804"
+    ],
+    "gateway_ids": [
+      "pay_00084"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000084 -> 0000804); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0085",
+    "ledger_id": "TXN-000085",
+    "bank_ids": [
+      "0000085"
+    ],
+    "gateway_ids": [
+      "pay_00085"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0086",
+    "ledger_id": "TXN-000086",
+    "bank_ids": [
+      "0000086"
+    ],
+    "gateway_ids": [
+      "pay_00086"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0087",
+    "ledger_id": "TXN-000087",
+    "bank_ids": [
+      "0000087"
+    ],
+    "gateway_ids": [
+      "pay_00087"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0088",
+    "ledger_id": "TXN-000088",
+    "bank_ids": [
+      "0000088"
+    ],
+    "gateway_ids": [
+      "pay_00088"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0089",
+    "ledger_id": "TXN-000089",
+    "bank_ids": [
+      "0000809"
+    ],
+    "gateway_ids": [
+      "pay_00089"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000089 -> 0000809); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0090",
+    "ledger_id": "TXN-000090",
+    "bank_ids": [
+      "0000090"
+    ],
+    "gateway_ids": [
+      "pay_00090"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b93748.45 -> \u20b93659.99); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0091",
+    "ledger_id": "TXN-000091",
+    "bank_ids": [
+      "0000091"
+    ],
+    "gateway_ids": [
+      "pay_00091"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0092",
+    "ledger_id": "TXN-000092",
+    "bank_ids": [
+      "0000092"
+    ],
+    "gateway_ids": [
+      "pay_00092"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0093",
+    "ledger_id": "TXN-000093",
+    "bank_ids": [
+      "0000093"
+    ],
+    "gateway_ids": [
+      "pay_00093"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0094",
+    "ledger_id": "TXN-000094",
+    "bank_ids": [
+      "0000094"
+    ],
+    "gateway_ids": [
+      "pay_00094"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0095",
+    "ledger_id": "TXN-000095",
+    "bank_ids": [
+      "0000095"
+    ],
+    "gateway_ids": [
+      "pay_00095"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0096",
+    "ledger_id": "TXN-000096",
+    "bank_ids": [
+      "0000096"
+    ],
+    "gateway_ids": [
+      "pay_00096"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0097",
+    "ledger_id": "TXN-000097",
+    "bank_ids": [
+      "0000097"
+    ],
+    "gateway_ids": [
+      "pay_00097"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0098",
+    "ledger_id": "TXN-000098",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0099",
+    "ledger_id": "TXN-000099",
+    "bank_ids": [
+      "0000909"
+    ],
+    "gateway_ids": [
+      "pay_00099"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000099 -> 0000909); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0100",
+    "ledger_id": "TXN-000100",
+    "bank_ids": [
+      "0000100"
+    ],
+    "gateway_ids": [
+      "pay_00100"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0101",
+    "ledger_id": "TXN-000101",
+    "bank_ids": [
+      "0000101"
+    ],
+    "gateway_ids": [
+      "pay_00101"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b929498.33 -> \u20b928802.17); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0102",
+    "ledger_id": "TXN-000102",
+    "bank_ids": [
+      "0000102"
+    ],
+    "gateway_ids": [
+      "pay_00102"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0103",
+    "ledger_id": "TXN-000103",
+    "bank_ids": [
+      "0000103"
+    ],
+    "gateway_ids": [
+      "pay_00103"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0104",
+    "ledger_id": "TXN-000104",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0105",
+    "ledger_id": "TXN-000105",
+    "bank_ids": [
+      "0000105"
+    ],
+    "gateway_ids": [
+      "pay_00105"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0106",
+    "ledger_id": "TXN-000106",
+    "bank_ids": [
+      "0000106"
+    ],
+    "gateway_ids": [
+      "pay_00106"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0107",
+    "ledger_id": "TXN-000107",
+    "bank_ids": [
+      "0001007"
+    ],
+    "gateway_ids": [
+      "pay_00107"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000107 -> 0001007); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0108",
+    "ledger_id": "TXN-000108",
+    "bank_ids": [
+      "0001008"
+    ],
+    "gateway_ids": [
+      "pay_00108"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000108 -> 0001008); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0109",
+    "ledger_id": "TXN-000109",
+    "bank_ids": [
+      "0000109"
+    ],
+    "gateway_ids": [
+      "pay_00109A",
+      "pay_00109B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00109A: \u20b96572.59, pay_00109B: \u20b94381.73) summing exactly to the ledger amount \u20b910954.32 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0110",
+    "ledger_id": "TXN-000110",
+    "bank_ids": [
+      "0001010"
+    ],
+    "gateway_ids": [
+      "pay_00110"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000110 -> 0001010); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0111",
+    "ledger_id": "TXN-000111",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0112",
+    "ledger_id": "TXN-000112",
+    "bank_ids": [
+      "0001012"
+    ],
+    "gateway_ids": [
+      "pay_00112"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000112 -> 0001012); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0113",
+    "ledger_id": "TXN-000113",
+    "bank_ids": [
+      "0000113"
+    ],
+    "gateway_ids": [
+      "pay_00113"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0114",
+    "ledger_id": "TXN-000114",
+    "bank_ids": [
+      "0000114"
+    ],
+    "gateway_ids": [
+      "pay_00114"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0115",
+    "ledger_id": "TXN-000115",
+    "bank_ids": [
+      "0000115"
+    ],
+    "gateway_ids": [
+      "pay_00115"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b915098.47 -> \u20b914742.15); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0116",
+    "ledger_id": "TXN-000116",
+    "bank_ids": [
+      "0001016"
+    ],
+    "gateway_ids": [
+      "pay_00116"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000116 -> 0001016); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0117",
+    "ledger_id": "TXN-000117",
+    "bank_ids": [
+      "0000117"
+    ],
+    "gateway_ids": [
+      "pay_00117"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0118",
+    "ledger_id": "TXN-000118",
+    "bank_ids": [
+      "0001018"
+    ],
+    "gateway_ids": [
+      "pay_00118"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000118 -> 0001018); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0119",
+    "ledger_id": "TXN-000119",
+    "bank_ids": [
+      "0001019"
+    ],
+    "gateway_ids": [
+      "pay_00119"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000119 -> 0001019); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0120",
+    "ledger_id": "TXN-000120",
+    "bank_ids": [
+      "0000120"
+    ],
+    "gateway_ids": [
+      "pay_00120"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0121",
+    "ledger_id": "TXN-000121",
+    "bank_ids": [
+      "0000121"
+    ],
+    "gateway_ids": [
+      "pay_00121"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0122",
+    "ledger_id": "TXN-000122",
+    "bank_ids": [
+      "0000122"
+    ],
+    "gateway_ids": [
+      "pay_00122"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0123",
+    "ledger_id": "TXN-000123",
+    "bank_ids": [
+      "0000123"
+    ],
+    "gateway_ids": [
+      "pay_00123"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0124",
+    "ledger_id": "TXN-000124",
+    "bank_ids": [
+      "0000124"
+    ],
+    "gateway_ids": [
+      "pay_00124"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0125",
+    "ledger_id": "TXN-000125",
+    "bank_ids": [
+      "0000125"
+    ],
+    "gateway_ids": [
+      "pay_00125"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b928617.62 -> \u20b927942.24); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0126",
+    "ledger_id": "TXN-000126",
+    "bank_ids": [
+      "0000216"
+    ],
+    "gateway_ids": [
+      "pay_00126"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000126 -> 0000216); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0127",
+    "ledger_id": "TXN-000127",
+    "bank_ids": [
+      "0000127"
+    ],
+    "gateway_ids": [
+      "pay_00127"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0128",
+    "ledger_id": "TXN-000128",
+    "bank_ids": [
+      "0000128"
+    ],
+    "gateway_ids": [
+      "pay_00128"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0129",
+    "ledger_id": "TXN-000129",
+    "bank_ids": [
+      "0000129"
+    ],
+    "gateway_ids": [
+      "pay_00129"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0130",
+    "ledger_id": "TXN-000130",
+    "bank_ids": [
+      "0000130"
+    ],
+    "gateway_ids": [
+      "pay_00130"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0131",
+    "ledger_id": "TXN-000131",
+    "bank_ids": [
+      "0000131"
+    ],
+    "gateway_ids": [
+      "pay_00131"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0132",
+    "ledger_id": "TXN-000132",
+    "bank_ids": [
+      "0000132"
+    ],
+    "gateway_ids": [
+      "pay_00132"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0133",
+    "ledger_id": "TXN-000133",
+    "bank_ids": [
+      "0000133"
+    ],
+    "gateway_ids": [
+      "pay_00133"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0134",
+    "ledger_id": "TXN-000134",
+    "bank_ids": [
+      "0000314"
+    ],
+    "gateway_ids": [
+      "pay_00134"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000134 -> 0000314); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0135",
+    "ledger_id": "TXN-000135",
+    "bank_ids": [
+      "0000135"
+    ],
+    "gateway_ids": [
+      "pay_00135A",
+      "pay_00135B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00135A: \u20b921698.30, pay_00135B: \u20b914465.54) summing exactly to the ledger amount \u20b936163.84 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0136",
+    "ledger_id": "TXN-000136",
+    "bank_ids": [
+      "0000136"
+    ],
+    "gateway_ids": [
+      "pay_00136"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0137",
+    "ledger_id": "TXN-000137",
+    "bank_ids": [
+      "0000137"
+    ],
+    "gateway_ids": [
+      "pay_00137"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0138",
+    "ledger_id": "TXN-000138",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0139",
+    "ledger_id": "TXN-000139",
+    "bank_ids": [
+      "0000139"
+    ],
+    "gateway_ids": [
+      "pay_00139"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0140",
+    "ledger_id": "TXN-000140",
+    "bank_ids": [
+      "0000140"
+    ],
+    "gateway_ids": [
+      "pay_00140"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0141",
+    "ledger_id": "TXN-000141",
+    "bank_ids": [
+      "0000141"
+    ],
+    "gateway_ids": [
+      "pay_00141"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0142",
+    "ledger_id": "TXN-000142",
+    "bank_ids": [
+      "0000142"
+    ],
+    "gateway_ids": [
+      "pay_00142"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0143",
+    "ledger_id": "TXN-000143",
+    "bank_ids": [
+      "0000143"
+    ],
+    "gateway_ids": [
+      "pay_00143"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0144",
+    "ledger_id": "TXN-000144",
+    "bank_ids": [
+      "0000144"
+    ],
+    "gateway_ids": [
+      "pay_00144"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0145",
+    "ledger_id": "TXN-000145",
+    "bank_ids": [
+      "0000145"
+    ],
+    "gateway_ids": [
+      "pay_00145"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0146",
+    "ledger_id": "TXN-000146",
+    "bank_ids": [
+      "0000146"
+    ],
+    "gateway_ids": [
+      "pay_00146"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0147",
+    "ledger_id": "TXN-000147",
+    "bank_ids": [
+      "0000147"
+    ],
+    "gateway_ids": [
+      "pay_00147"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0148",
+    "ledger_id": "TXN-000148",
+    "bank_ids": [
+      "0000148"
+    ],
+    "gateway_ids": [
+      "pay_00148"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0149",
+    "ledger_id": "TXN-000149",
+    "bank_ids": [
+      "0000149"
+    ],
+    "gateway_ids": [
+      "pay_00149"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0150",
+    "ledger_id": "TXN-000150",
+    "bank_ids": [
+      "0000150"
+    ],
+    "gateway_ids": [
+      "pay_00150"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0151",
+    "ledger_id": "TXN-000151",
+    "bank_ids": [
+      "0000511"
+    ],
+    "gateway_ids": [
+      "pay_00151"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000151 -> 0000511); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0152",
+    "ledger_id": "TXN-000152",
+    "bank_ids": [
+      "0000512"
+    ],
+    "gateway_ids": [
+      "pay_00152"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000152 -> 0000512); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0153",
+    "ledger_id": "TXN-000153",
+    "bank_ids": [
+      "0000153"
+    ],
+    "gateway_ids": [
+      "pay_00153"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0154",
+    "ledger_id": "TXN-000154",
+    "bank_ids": [
+      "0000154"
+    ],
+    "gateway_ids": [
+      "pay_00154"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0155",
+    "ledger_id": "TXN-000155",
+    "bank_ids": [
+      "0000155"
+    ],
+    "gateway_ids": [
+      "pay_00155"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0156",
+    "ledger_id": "TXN-000156",
+    "bank_ids": [
+      "0000156"
+    ],
+    "gateway_ids": [
+      "pay_00156"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0157",
+    "ledger_id": "TXN-000157",
+    "bank_ids": [
+      "0000157"
+    ],
+    "gateway_ids": [
+      "pay_00157"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0158",
+    "ledger_id": "TXN-000158",
+    "bank_ids": [
+      "0000158"
+    ],
+    "gateway_ids": [
+      "pay_00158"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0159",
+    "ledger_id": "TXN-000159",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0160",
+    "ledger_id": "TXN-000160",
+    "bank_ids": [
+      "0000160"
+    ],
+    "gateway_ids": [
+      "pay_00160"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "duplicate_entry",
+    "notes": "Gateway settlement row for pay_00160 appears twice in gateway_settlement.csv (duplicate webhook retry of the same payout); both raw rows correspond to this single true transaction."
+  },
+  {
+    "true_transaction_id": "GT-0161",
+    "ledger_id": "TXN-000161",
+    "bank_ids": [
+      "0000161"
+    ],
+    "gateway_ids": [
+      "pay_00161"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0162",
+    "ledger_id": "TXN-000162",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0163",
+    "ledger_id": "TXN-000163",
+    "bank_ids": [
+      "0000163"
+    ],
+    "gateway_ids": [
+      "pay_00163"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0164",
+    "ledger_id": "TXN-000164",
+    "bank_ids": [
+      "0000164"
+    ],
+    "gateway_ids": [
+      "pay_00164"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b92934.77 -> \u20b92865.51); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0165",
+    "ledger_id": "TXN-000165",
+    "bank_ids": [
+      "0000165"
+    ],
+    "gateway_ids": [
+      "pay_00165"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0166",
+    "ledger_id": "TXN-000166",
+    "bank_ids": [],
+    "gateway_ids": [],
+    "expected_outcome": "UNRESOLVED",
+    "mismatch_type": "missing_counterpart",
+    "notes": "Transaction recorded in the ledger only; genuinely pending settlement \u2014 no bank or gateway record exists yet. Ground truth expects this to remain unresolved (exception type MISSING_COUNTERPART), never force-matched."
+  },
+  {
+    "true_transaction_id": "GT-0167",
+    "ledger_id": "TXN-000167",
+    "bank_ids": [
+      "0000167"
+    ],
+    "gateway_ids": [
+      "pay_00167"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0168",
+    "ledger_id": "TXN-000168",
+    "bank_ids": [
+      "0000168"
+    ],
+    "gateway_ids": [
+      "pay_00168"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0169",
+    "ledger_id": "TXN-000169",
+    "bank_ids": [
+      "0000169"
+    ],
+    "gateway_ids": [
+      "pay_00169"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0170",
+    "ledger_id": "TXN-000170",
+    "bank_ids": [
+      "0000170"
+    ],
+    "gateway_ids": [
+      "pay_00170"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0171",
+    "ledger_id": "TXN-000171",
+    "bank_ids": [
+      "0000711"
+    ],
+    "gateway_ids": [
+      "pay_00171"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000171 -> 0000711); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0172",
+    "ledger_id": "TXN-000172",
+    "bank_ids": [
+      "0000172"
+    ],
+    "gateway_ids": [
+      "pay_00172"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0173",
+    "ledger_id": "TXN-000173",
+    "bank_ids": [
+      "0000173"
+    ],
+    "gateway_ids": [
+      "pay_00173"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0174",
+    "ledger_id": "TXN-000174",
+    "bank_ids": [
+      "0000174"
+    ],
+    "gateway_ids": [
+      "pay_00174"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "duplicate_entry",
+    "notes": "Gateway settlement row for pay_00174 appears twice in gateway_settlement.csv (duplicate webhook retry of the same payout); both raw rows correspond to this single true transaction."
+  },
+  {
+    "true_transaction_id": "GT-0175",
+    "ledger_id": "TXN-000175",
+    "bank_ids": [
+      "0000175"
+    ],
+    "gateway_ids": [
+      "pay_00175"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b935863.42 -> \u20b935017.04); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0176",
+    "ledger_id": "TXN-000176",
+    "bank_ids": [
+      "0000176"
+    ],
+    "gateway_ids": [
+      "pay_00176"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0177",
+    "ledger_id": "TXN-000177",
+    "bank_ids": [
+      "0000177"
+    ],
+    "gateway_ids": [
+      "pay_00177"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0178",
+    "ledger_id": "TXN-000178",
+    "bank_ids": [
+      "0000178"
+    ],
+    "gateway_ids": [
+      "pay_00178A",
+      "pay_00178B"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "split_settlement",
+    "notes": "Ledger invoice settled via two gateway records (pay_00178A: \u20b911585.47, pay_00178B: \u20b97723.64) summing exactly to the ledger amount \u20b919309.11 \u2014 a 60/40 split settlement."
+  },
+  {
+    "true_transaction_id": "GT-0179",
+    "ledger_id": "TXN-000179",
+    "bank_ids": [
+      "0000179"
+    ],
+    "gateway_ids": [
+      "pay_00179"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0180",
+    "ledger_id": "TXN-000180",
+    "bank_ids": [
+      "0000810"
+    ],
+    "gateway_ids": [
+      "pay_00180"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000180 -> 0000810); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0181",
+    "ledger_id": "TXN-000181",
+    "bank_ids": [
+      "0000181"
+    ],
+    "gateway_ids": [
+      "pay_00181"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0182",
+    "ledger_id": "TXN-000182",
+    "bank_ids": [
+      "0000182"
+    ],
+    "gateway_ids": [
+      "pay_00182"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0183",
+    "ledger_id": "TXN-000183",
+    "bank_ids": [
+      "0000183"
+    ],
+    "gateway_ids": [
+      "pay_00183"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0184",
+    "ledger_id": "TXN-000184",
+    "bank_ids": [
+      "0000184"
+    ],
+    "gateway_ids": [
+      "pay_00184"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0185",
+    "ledger_id": "TXN-000185",
+    "bank_ids": [
+      "0000185"
+    ],
+    "gateway_ids": [
+      "pay_00185"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0186",
+    "ledger_id": "TXN-000186",
+    "bank_ids": [
+      "0000186"
+    ],
+    "gateway_ids": [
+      "pay_00186"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0187",
+    "ledger_id": "TXN-000187",
+    "bank_ids": [
+      "0000187"
+    ],
+    "gateway_ids": [
+      "pay_00187"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "timing_drift",
+    "notes": "Bank clearing delayed by an extra 3 days beyond the standard T+1 window (posted 4 days after the ledger date) \u2014 simulates a clearing delay. Still inside the configured date-match window."
+  },
+  {
+    "true_transaction_id": "GT-0188",
+    "ledger_id": "TXN-000188",
+    "bank_ids": [
+      "0000188"
+    ],
+    "gateway_ids": [
+      "pay_00188"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0189",
+    "ledger_id": "TXN-000189",
+    "bank_ids": [
+      "0000819"
+    ],
+    "gateway_ids": [
+      "pay_00189"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "id_format_drift",
+    "notes": "Bank reference ID transcribed with digits transposed (0000189 -> 0000819); exact-ID matching cannot resolve this, requires fuzzy match on amount + date + narration."
+  },
+  {
+    "true_transaction_id": "GT-0190",
+    "ledger_id": "TXN-000190",
+    "bank_ids": [
+      "0000190"
+    ],
+    "gateway_ids": [
+      "pay_00190"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b920871.68 -> \u20b920379.11); bank statement still shows the full ledger amount."
+  },
+  {
+    "true_transaction_id": "GT-0191",
+    "ledger_id": "TXN-000191",
+    "bank_ids": [
+      "0000191"
+    ],
+    "gateway_ids": [
+      "pay_00191"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0192",
+    "ledger_id": "TXN-000192",
+    "bank_ids": [
+      "0000192"
+    ],
+    "gateway_ids": [
+      "pay_00192"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "duplicate_entry",
+    "notes": "Gateway settlement row for pay_00192 appears twice in gateway_settlement.csv (duplicate webhook retry of the same payout); both raw rows correspond to this single true transaction."
+  },
+  {
+    "true_transaction_id": "GT-0193",
+    "ledger_id": "TXN-000193",
+    "bank_ids": [
+      "0000193"
+    ],
+    "gateway_ids": [
+      "pay_00193"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0194",
+    "ledger_id": "TXN-000194",
+    "bank_ids": [
+      "0000194"
+    ],
+    "gateway_ids": [
+      "pay_00194"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0195",
+    "ledger_id": "TXN-000195",
+    "bank_ids": [
+      "0000195"
+    ],
+    "gateway_ids": [
+      "pay_00195"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0196",
+    "ledger_id": "TXN-000196",
+    "bank_ids": [
+      "0000196"
+    ],
+    "gateway_ids": [
+      "pay_00196"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0197",
+    "ledger_id": "TXN-000197",
+    "bank_ids": [
+      "0000197"
+    ],
+    "gateway_ids": [
+      "pay_00197"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "duplicate_entry",
+    "notes": "Gateway settlement row for pay_00197 appears twice in gateway_settlement.csv (duplicate webhook retry of the same payout); both raw rows correspond to this single true transaction."
+  },
+  {
+    "true_transaction_id": "GT-0198",
+    "ledger_id": "TXN-000198",
+    "bank_ids": [
+      "0000198"
+    ],
+    "gateway_ids": [
+      "pay_00198"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0199",
+    "ledger_id": "TXN-000199",
+    "bank_ids": [
+      "0000199"
+    ],
+    "gateway_ids": [
+      "pay_00199"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": null,
+    "notes": "Clean match: standard T+1 bank clearing, T+2 gateway payout, no fee deduction, identical amount across all three sources."
+  },
+  {
+    "true_transaction_id": "GT-0200",
+    "ledger_id": "TXN-000200",
+    "bank_ids": [
+      "0000200"
+    ],
+    "gateway_ids": [
+      "pay_00200"
+    ],
+    "expected_outcome": "MATCH",
+    "mismatch_type": "fee_adjusted",
+    "notes": "Gateway amount is ledger amount minus a 2.00% processing fee minus 18.00% GST on that fee (\u20b915275.43 -> \u20b914914.93); bank statement still shows the full ledger amount."
+  }
+]
