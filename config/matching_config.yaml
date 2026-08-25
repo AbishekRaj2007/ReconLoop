@@ -1,0 +1,48 @@
+# ReconLoop matching configuration
+# All tolerances/thresholds live here — never hardcode these in code (see CLAUDE.md).
+
+# --- Tier 2: Fuzzy match confidence score ---
+# score = (amount_weight * amount_score) + (date_weight * date_score) + (narration_weight * narration_score)
+score_weights:
+  amount: 0.40
+  date: 0.35
+  narration: 0.25
+
+# --- Tier routing thresholds (0-100 confidence scale) ---
+thresholds:
+  auto_match: 90              # score >= this -> Tier 2 auto-match (still logged/auditable)
+  llm_tier: 60                # score in [llm_tier, auto_match) -> escalate to Tier 3 with candidates
+                               # score < llm_tier -> straight to exception classifier, no plausible candidate
+  tier3_confidence_escalation: 70   # Tier 3 confidence below this -> escalate to Tier 4
+
+# --- Date matching ---
+date_window:
+  max_days: 5                 # date_score decays linearly from 100 (same day) to 0 at this many days
+  candidate_search_days: 5    # window used for Tier 2 candidate generation
+
+# --- Amount matching ---
+amount_tolerance:
+  exact_match_paise: 0        # 0 paise difference = exact
+  fee_schedule:
+    percentage_fee: 0.02      # 2% gateway fee
+    gst_on_fee: 0.18          # 18% GST applied on top of the fee
+
+# --- LLM tiers ---
+llm:
+  tier3:
+    provider: groq
+    model: llama-3.3-70b-versatile
+  tier4:
+    provider: anthropic
+    model: claude-sonnet-4-5
+  max_malformed_retries: 1    # reject and retry once; still malformed -> LLM_OUTPUT_UNPARSEABLE
+
+# --- Synthetic data injection rates (Phase 1 generator reads these too) ---
+injection_rates:
+  clean_exact_match: 0.55
+  id_format_drift: 0.15
+  timing_drift: 0.10
+  fee_adjusted_amount: 0.08
+  missing_counterpart: 0.05
+  duplicate_entry: 0.03
+  split_settlement: 0.04
