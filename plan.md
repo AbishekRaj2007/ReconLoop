@@ -232,15 +232,15 @@ Dates are a guide, not handcuffs — you're a student with classes. The order of
 ### Phase 1 — Synthetic Data Generator & Ground Truth
 **Objective:** Generate believable, messy, multi-source transaction data with a known-correct answer key.
 
-- [ ] Define canonical transaction schema (see §10) shared conceptually across all 3 sources
-- [ ] Write `generate_synthetic_data.py`: seeded (`random.seed(42)` or CLI-configurable), generates:
-  - [ ] 200 "true" underlying transactions
-  - [ ] Ledger CSV (all 200, clean reference IDs)
-  - [ ] Bank statement CSV (with timing drift, ID reformatting, ~5% missing entries — pending settlement)
-  - [ ] Gateway settlement CSV (with fee deductions, ~3% duplicated webhook retries, some split settlements)
-- [ ] Inject **every** mismatch type from §10.2 at a known rate (e.g., 10% timing drift, 8% fee mismatch, 5% missing counterpart, 3% duplicates, 4% split settlements)
-- [ ] Write `ground_truth_matches.json`: for every one of the 200 true transactions, the correct `ledger_id` / `bank_id(s)` / `gateway_id(s)` and whether it *should* end up UNRESOLVED (some transactions are genuinely still pending — the ground truth must include intentionally-unresolvable cases, not just clean matches)
-- [ ] Unit test: generator run twice with same seed produces byte-identical files
+- [x] Define canonical transaction schema (see §10) shared conceptually across all 3 sources
+- [x] Write `generate_synthetic_data.py`: seeded (`random.seed(42)` or CLI-configurable), generates:
+  - [x] 200 "true" underlying transactions
+  - [x] Ledger CSV (all 200, clean reference IDs)
+  - [x] Bank statement CSV (with timing drift, ID reformatting, ~5% missing entries — pending settlement)
+  - [x] Gateway settlement CSV (with fee deductions, ~3% duplicated webhook retries, some split settlements)
+- [x] Inject **every** mismatch type from §10.2 at a known rate (e.g., 10% timing drift, 8% fee mismatch, 5% missing counterpart, 3% duplicates, 4% split settlements)
+- [x] Write `ground_truth_matches.json`: for every one of the 200 true transactions, the correct `ledger_id` / `bank_id(s)` / `gateway_id(s)` and whether it *should* end up UNRESOLVED (some transactions are genuinely still pending — the ground truth must include intentionally-unresolvable cases, not just clean matches)
+- [x] Unit test: generator run twice with same seed produces byte-identical files
 
 **Deliverable:** Three CSVs + one ground truth JSON, regeneratable with one command.
 
