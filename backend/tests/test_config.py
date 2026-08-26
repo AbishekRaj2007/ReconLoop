@@ -61,6 +61,12 @@ def test_loads_llm_max_malformed_retries():
     assert config.llm.max_malformed_retries == 1
 
 
+def test_loads_classifier_duplicate_tie_epsilon():
+    config = load_matching_config(CONFIG_PATH)
+
+    assert config.classifier.duplicate_tie_epsilon == 2.0
+
+
 def test_loads_llm_pricing_as_decimal_not_float():
     config = load_matching_config(CONFIG_PATH)
 

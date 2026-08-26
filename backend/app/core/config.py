@@ -62,12 +62,18 @@ class LLMConfig:
 
 
 @dataclass(frozen=True)
+class ClassifierConfig:
+    duplicate_tie_epsilon: float
+
+
+@dataclass(frozen=True)
 class MatchingConfig:
     score_weights: ScoreWeights
     thresholds: Thresholds
     date_window: DateWindow
     amount_tolerance: AmountTolerance
     llm: LLMConfig | None = None
+    classifier: ClassifierConfig | None = None
 
 
 def _load_llm_tier_config(raw: dict) -> LLMTierConfig:
@@ -100,5 +106,8 @@ def load_matching_config(path: Path) -> MatchingConfig:
             tier3=_load_llm_tier_config(llm_raw["tier3"]),
             tier4=_load_llm_tier_config(llm_raw["tier4"]),
             max_malformed_retries=llm_raw["max_malformed_retries"],
+        ),
+        classifier=ClassifierConfig(
+            duplicate_tie_epsilon=raw["classifier"]["duplicate_tie_epsilon"]
         ),
     )

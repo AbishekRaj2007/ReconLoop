@@ -43,6 +43,10 @@ llm:
     cost_per_1k_output_tokens: 0.015
   max_malformed_retries: 1    # reject and retry once; still malformed -> LLM_OUTPUT_UNPARSEABLE
 
+# --- Phase 4: exception classifier ---
+classifier:
+  duplicate_tie_epsilon: 2.0   # candidates within this many score points of the top score are a genuine tie -> DUPLICATE_CANDIDATE
+
 # --- Synthetic data injection rates (Phase 1 generator reads these too) ---
 injection_rates:
   clean_exact_match: 0.55
