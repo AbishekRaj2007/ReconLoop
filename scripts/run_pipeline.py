@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import csv
 import sys
+import time
 from collections import Counter
 from dataclasses import dataclass
 from decimal import Decimal
@@ -36,6 +37,7 @@ from app.core.matcher.llm_adjudicator import (
 )
 
 SIDES = ("bank", "gateway")
+TIER_RANK = {"TIER_1": 1, "TIER_2": 2, "TIER_3": 3, "TIER_4": 4}
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -51,22 +53,34 @@ class Escalation:
     fuzzy_score: float
 
 
+@dataclass(frozen=True)
+class MatchRecord:
+    ledger_id: str
+    bank_ids: list[str]
+    gateway_ids: list[str]
+    tier: str  # "TIER_1" | "TIER_2" | "TIER_3" | "TIER_4"
+
+
 def run_tier1_and_tier2(
     ledger_rows: list[dict],
     bank_rows: list[dict],
     gateway_rows: list[dict],
     config: MatchingConfig,
 ) -> tuple[
-    int,
+    list[MatchRecord],
     dict[str, dict[str, FuzzyMatchResult]],
     list[Escalation],
     dict[str, dict],
     list[dict],
     list[dict],
 ]:
-    """Returns (tier1_matched_count, tier2_results_by_ledger_id, escalations,
+    """Returns (tier1_matches, tier2_results_by_ledger_id, escalations,
     ledger_row_by_id, remaining_bank_rows, remaining_gateway_rows)."""
     tier1 = match_exact(ledger_rows, bank_rows, gateway_rows)
+    tier1_matches = [
+        MatchRecord(m.ledger_id, m.bank_ids, m.gateway_ids, "TIER_1")
+        for m in tier1.matches
+    ]
 
     consumed_bank_ids = {bid for m in tier1.matches for bid in m.bank_ids}
     consumed_gateway_ids = {gid for m in tier1.matches for gid in m.gateway_ids}
@@ -108,7 +122,7 @@ def run_tier1_and_tier2(
                 )
 
     return (
-        len(tier1.matches),
+        tier1_matches,
         tier2_results,
         escalations,
         ledger_by_id,
@@ -137,21 +151,34 @@ def run_llm_tiers(
     return outcomes
 
 
-def classify_unresolved(
+def _side_resolution(
+    result: FuzzyMatchResult, llm_outcome: AdjudicationOutcome | None
+) -> tuple[str, str] | None:
+    """Returns (matched_id, tier) if this side resolved, else None."""
+    if result.outcome == "AUTO_MATCH":
+        return result.candidate_id, "TIER_2"
+    if llm_outcome is not None and llm_outcome.final_outcome == "MATCH":
+        tier = "TIER_4" if "TIER_4" in llm_outcome.tiers_used else "TIER_3"
+        return llm_outcome.candidate_id, tier
+    return None
+
+
+def partition_records(
     tier2_results: dict[str, dict[str, FuzzyMatchResult]],
     llm_outcomes: dict[str, dict[str, AdjudicationOutcome]],
     ledger_by_id: dict[str, dict],
     remaining_bank_rows: list[dict],
     remaining_gateway_rows: list[dict],
     config: MatchingConfig,
-) -> tuple[int, int, list[ExceptionRecord]]:
+) -> tuple[list[MatchRecord], int, list[ExceptionRecord]]:
     """Partitions every Tier-1-unmatched ledger record into resolved (both
-    sides matched, whether by Tier 2 or Tier 3/4), pending (still waiting on
-    an escalation that hasn't been adjudicated), or a classified exception.
+    sides matched, whether by Tier 2 or Tier 3/4 — recorded with the highest
+    tier either side needed), pending (still waiting on an escalation that
+    hasn't been adjudicated), or a classified exception.
 
-    Returns (resolved_count, pending_count, exceptions).
+    Returns (matches, pending_count, exceptions).
     """
-    resolved_count = 0
+    matches: list[MatchRecord] = []
     pending_count = 0
     exceptions: list[ExceptionRecord] = []
 
@@ -161,14 +188,14 @@ def classify_unresolved(
         bank_llm = llm_outcomes.get(ledger_id, {}).get("bank")
         gateway_llm = llm_outcomes.get(ledger_id, {}).get("gateway")
 
-        bank_matched = bank_result.outcome == "AUTO_MATCH" or (
-            bank_llm is not None and bank_llm.final_outcome == "MATCH"
-        )
-        gateway_matched = gateway_result.outcome == "AUTO_MATCH" or (
-            gateway_llm is not None and gateway_llm.final_outcome == "MATCH"
-        )
-        if bank_matched and gateway_matched:
-            resolved_count += 1
+        bank_resolution = _side_resolution(bank_result, bank_llm)
+        gateway_resolution = _side_resolution(gateway_result, gateway_llm)
+
+        if bank_resolution is not None and gateway_resolution is not None:
+            bank_id, bank_tier = bank_resolution
+            gateway_id, gateway_tier = gateway_resolution
+            tier = max(bank_tier, gateway_tier, key=TIER_RANK.get)
+            matches.append(MatchRecord(ledger_id, [bank_id], [gateway_id], tier))
             continue
 
         bank_pending = bank_result.outcome == "ESCALATE_TIER3" and bank_llm is None
@@ -192,7 +219,7 @@ def classify_unresolved(
             )
         )
 
-    return resolved_count, pending_count, exceptions
+    return matches, pending_count, exceptions
 
 
 def run_pipeline(
@@ -202,19 +229,21 @@ def run_pipeline(
     tier3_client: LLMClient | None = None,
     tier4_client: LLMClient | None = None,
 ) -> dict:
+    start_time = time.perf_counter()
     config = load_matching_config(config_path)
     ledger_rows = read_csv(raw_dir / "ledger.csv")
     bank_rows = read_csv(raw_dir / "bank_statement.csv")
     gateway_rows = read_csv(raw_dir / "gateway_settlement.csv")
 
     (
-        tier1_matched,
+        tier1_matches,
         tier2_results,
         escalations,
         ledger_by_id,
         remaining_bank_rows,
         remaining_gateway_rows,
     ) = run_tier1_and_tier2(ledger_rows, bank_rows, gateway_rows, config)
+    tier1_matched = len(tier1_matches)
 
     tier2_fully_resolved = sum(
         1
@@ -264,7 +293,7 @@ def run_pipeline(
             "total_llm_cost_usd": total_cost,
         }
 
-    resolved_count, pending_count, exceptions = classify_unresolved(
+    tier2plus_matches, pending_count, exceptions = partition_records(
         tier2_results,
         llm_outcomes,
         ledger_by_id,
@@ -272,7 +301,9 @@ def run_pipeline(
         remaining_gateway_rows,
         config,
     )
-    resolved = tier1_matched + resolved_count
+    matches = tier1_matches + tier2plus_matches
+    resolved = len(matches)
+    wall_clock_seconds = time.perf_counter() - start_time
 
     report: dict = {
         "total": total,
@@ -286,8 +317,12 @@ def run_pipeline(
             if result.outcome == "NO_CANDIDATE"
         ),
         "pending_llm_count": pending_count,
+        "matches": matches,
         "exceptions": exceptions,
         "exception_type_counts": Counter(e.exception_type for e in exceptions),
+        "tier_attribution": Counter(m.tier for m in matches),
+        "wall_clock_seconds": wall_clock_seconds,
+        "records_per_second": total / wall_clock_seconds if wall_clock_seconds else 0.0,
     }
 
     if not use_llm:
