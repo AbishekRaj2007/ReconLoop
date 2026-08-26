@@ -275,17 +275,19 @@ Dates are a guide, not handcuffs — you're a student with classes. The order of
 ### Phase 3 — LLM Adjudication (Tier 3 + Tier 4)
 **Objective:** Spend AI judgment only where deterministic rules genuinely can't decide — and make that restraint visible.
 
-- [ ] `llm_adjudicator.py`: given an ambiguous record + its candidate(s) + computed deltas (amount diff, date diff, narration diff), build a structured prompt asking the model to output a **structured decision**: `MATCH` / `NO_MATCH` / `NEEDS_HUMAN_REVIEW`, with a confidence score and a one-sentence rationale
-- [ ] Tier 3 (fast/cheap): Groq Llama 3.3 70B — used first for all score-60–89 records
-- [ ] Escalation rule: if Tier 3 confidence < configurable threshold (e.g., 70) **or** the model itself asks for review → escalate to Tier 4
-- [ ] Tier 4 (strong): Claude Sonnet or GPT-4o — only the residual hard cases reach here (expect this to be a small single-digit percentage of the total batch — track and report this percentage explicitly, it's a selling point)
-- [ ] Every LLM call (both tiers) logged to an audit table: prompt, response, model, latency, estimated cost, final decision
-- [ ] Hard rule: if the model's own confidence is below threshold, it does **not** get to force a match — routes to exception instead. This is the single most important guardrail in the whole project for "Failure Recovery."
-- [ ] Unit tests: mock the LLM client, test the escalation logic and the confidence-gate logic in isolation (don't burn API calls in CI)
+- [x] `llm_adjudicator.py`: given an ambiguous record + its candidate(s) + computed deltas (amount diff, date diff, narration diff), build a structured prompt asking the model to output a **structured decision**: `MATCH` / `NO_MATCH` / `NEEDS_HUMAN_REVIEW`, with a confidence score and a one-sentence rationale
+- [x] Tier 3 (fast/cheap): Groq Llama 3.3 70B — used first for all score-60–89 records
+- [x] Escalation rule: if Tier 3 confidence < configurable threshold (e.g., 70) **or** the model itself asks for review → escalate to Tier 4
+- [x] Tier 4 (strong): Claude Sonnet or GPT-4o — only the residual hard cases reach here (expect this to be a small single-digit percentage of the total batch — track and report this percentage explicitly, it's a selling point)
+- [x] Every LLM call (both tiers) logged to an audit table: prompt, response, model, latency, estimated cost, final decision
+- [x] Hard rule: if the model's own confidence is below threshold, it does **not** get to force a match — routes to exception instead. This is the single most important guardrail in the whole project for "Failure Recovery."
+- [x] Unit tests: mock the LLM client, test the escalation logic and the confidence-gate logic in isolation (don't burn API calls in CI)
 
 **Deliverable:** Second-pass match rate after LLM tiers, plus a clear breakdown: "% resolved by Tier 1 / Tier 2 / Tier 3 / Tier 4 / still unresolved."
 
-**Definition of done:** You can state, with a number, what fraction of the batch needed AI at all — and defend why that number is honest, not padded.
+**Status: implementation complete and unit-tested; the live number is not yet captured.** `GROQ_API_KEY`/`ANTHROPIC_API_KEY` are unset in this environment (`.env` doesn't exist, only `.env.example`), and Tier 3/4 make real, billed API calls — so `python scripts/run_pipeline.py --use-llm` has not been run against the real seed=42/count=200 batch. All escalation/confidence-gate/audit-log logic is verified with `FakeLLMClient` (77 tests in `test_llm_adjudicator.py` + `test_llm_clients.py` + `test_run_pipeline_llm.py`), including a fixture that drives the full Tier 1 → Tier 2 → Tier 3 → Tier 4 → resolved/unresolved path end to end. To get the real second-pass number: fill in both keys in `.env` (copy from `.env.example`), then run `python scripts/run_pipeline.py --use-llm` from the repo root — it prints the Tier 3/4 breakdown, LLM call count, estimated cost, and second-pass match rate. Once run, record the result here and in `docs/metrics_log.md` (Phase 5).
+
+**Definition of done:** You can state, with a number, what fraction of the batch needed AI at all — and defend why that number is honest, not padded. *(Pending the live `--use-llm` run above — the logic that would produce that number is built and tested, but the number itself isn't fabricated here.)*
 
 ---
 
