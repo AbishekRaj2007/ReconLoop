@@ -251,20 +251,22 @@ Dates are a guide, not handcuffs — you're a student with classes. The order of
 ### Phase 2 — Deterministic Matching Engine (Tier 1 + Tier 2)
 **Objective:** Resolve the majority of records without spending a single LLM call.
 
-- [ ] `normalize.py`: canonicalize amounts (paise-level, no floats — use `Decimal`), canonicalize dates (UTC, date-only), canonicalize reference IDs (strip prefixes/leading zeros for comparison, keep raw for display)
-- [ ] `exact_match.py` (Tier 1): match on normalized reference ID across all sources; O(n) using a hash index, not nested loops
-- [ ] `fuzzy_match.py` (Tier 2): for records unresolved after Tier 1:
-  - [ ] Candidate generation: same-side records within a date window
-  - [ ] Composite confidence score (weights configurable in `matching_config.yaml`):
+- [x] `normalize.py`: canonicalize amounts (paise-level, no floats — use `Decimal`), canonicalize dates (UTC, date-only), canonicalize reference IDs (strip prefixes/leading zeros for comparison, keep raw for display)
+- [x] `exact_match.py` (Tier 1): match on normalized reference ID across all sources; O(n) using a hash index, not nested loops
+- [x] `fuzzy_match.py` (Tier 2): for records unresolved after Tier 1:
+  - [x] Candidate generation: same-side records within a date window
+  - [x] Composite confidence score (weights configurable in `matching_config.yaml`):
     - amount similarity (exact / within tolerance / fee-adjusted match)
     - date proximity (same day / within N days)
     - string similarity on narration (`rapidfuzz.fuzz.token_sort_ratio`)
-  - [ ] Score ≥ 90 → auto-match (still logged, still auditable)
-  - [ ] Score 60–89 → pass to Tier 3 with the candidate list attached
-  - [ ] Score < 60 → pass straight to exception classifier (no plausible candidate)
-- [ ] Unit tests for both tiers using small hand-crafted fixtures (not the full synthetic set) so failures are easy to debug
+  - [x] Score ≥ 90 → auto-match (still logged, still auditable)
+  - [x] Score 60–89 → pass to Tier 3 with the candidate list attached
+  - [x] Score < 60 → pass straight to exception classifier (no plausible candidate)
+- [x] Unit tests for both tiers using small hand-crafted fixtures (not the full synthetic set) so failures are easy to debug
 
 **Deliverable:** Running the pipeline on the Phase 1 data resolves a first-pass match rate (expect somewhere in the 70–85% range at this stage — the rest is intentionally the hard part).
+
+**Actual result (`python scripts/run_pipeline.py` on the committed seed=42/count=200 sample):** 200 total records, 152 resolved by Tier 1 exact-ID match (76.0% first-pass match rate), 0 additional Tier 2 auto-matches, 68 side-attempts correctly escalated to the Tier 3 band (60–89), 28 side-attempts correctly found no plausible candidate. The 0% Tier 2 auto-match rate is expected, not a bug: ledger narration ("Payment received from X - Invoice INVxxxxx") and bank/gateway narration ("NEFT/XX/INVxxxxx", "Payout - MCHTxxxx - Order ORDxxxxx") are deliberately different styles per source (§10.1), so `token_sort_ratio` scores them low even for the obviously-correct candidate — which is exactly why those cases are designed to escalate to Tier 3's judgment rather than auto-match, per Golden Rule #2 (never force a match to be helpful).
 
 **Definition of done:** Every match, at every tier, is logged with *why* it matched (which rule, which score) — not just a boolean.
 
