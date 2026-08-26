@@ -28,13 +28,19 @@ amount_tolerance:
     gst_on_fee: 0.18          # 18% GST applied on top of the fee
 
 # --- LLM tiers ---
+# cost_per_1k_*_tokens are approximate list prices, for demo cost-estimate
+# purposes only (see docs/metrics_log.md, Phase 5) — not billing-accurate.
 llm:
   tier3:
     provider: groq
     model: llama-3.3-70b-versatile
+    cost_per_1k_input_tokens: 0.00059
+    cost_per_1k_output_tokens: 0.00079
   tier4:
     provider: anthropic
     model: claude-sonnet-4-5
+    cost_per_1k_input_tokens: 0.003
+    cost_per_1k_output_tokens: 0.015
   max_malformed_retries: 1    # reject and retry once; still malformed -> LLM_OUTPUT_UNPARSEABLE
 
 # --- Synthetic data injection rates (Phase 1 generator reads these too) ---

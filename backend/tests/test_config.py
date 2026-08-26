@@ -44,3 +44,28 @@ def test_loads_fee_schedule_as_decimal_not_float():
     assert fee_schedule.percentage_fee == Decimal("0.02")
     assert fee_schedule.gst_on_fee == Decimal("0.18")
     assert isinstance(fee_schedule.percentage_fee, Decimal)
+
+
+def test_loads_llm_tier_provider_and_model():
+    config = load_matching_config(CONFIG_PATH)
+
+    assert config.llm.tier3.provider == "groq"
+    assert config.llm.tier3.model == "llama-3.3-70b-versatile"
+    assert config.llm.tier4.provider == "anthropic"
+    assert config.llm.tier4.model == "claude-sonnet-4-5"
+
+
+def test_loads_llm_max_malformed_retries():
+    config = load_matching_config(CONFIG_PATH)
+
+    assert config.llm.max_malformed_retries == 1
+
+
+def test_loads_llm_pricing_as_decimal_not_float():
+    config = load_matching_config(CONFIG_PATH)
+
+    assert config.llm.tier3.cost_per_1k_input_tokens == Decimal("0.00059")
+    assert config.llm.tier3.cost_per_1k_output_tokens == Decimal("0.00079")
+    assert config.llm.tier4.cost_per_1k_input_tokens == Decimal("0.003")
+    assert config.llm.tier4.cost_per_1k_output_tokens == Decimal("0.015")
+    assert isinstance(config.llm.tier3.cost_per_1k_input_tokens, Decimal)
