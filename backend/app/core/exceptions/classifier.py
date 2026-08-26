@@ -187,7 +187,7 @@ def _detect_side_exception(
 
     if (
         tier2_result.score is not None
-        and tier2_result.score.amount_score < config.thresholds.llm_tier
+        and 0.0 < tier2_result.score.amount_score < config.thresholds.llm_tier
     ):
         return _ExceptionHit(
             "AMOUNT_MISMATCH_BEYOND_TOLERANCE",

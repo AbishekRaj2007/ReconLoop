@@ -294,12 +294,16 @@ Dates are a guide, not handcuffs — you're a student with classes. The order of
 ### Phase 4 — Exception Classifier
 **Objective:** Nothing disappears. Every unresolved record gets a name and a reason.
 
-- [ ] `classifier.py`: bucket every still-unresolved record into one of the named exception types (§12)
-- [ ] Rule-based classification first (e.g., no candidate at all within date window → `MISSING_COUNTERPART`); LLM rationale only used to *explain*, not to *classify*, keeping this tier fast and deterministic
-- [ ] Every exception gets: type, affected record IDs, a one-paragraph human-readable rationale, and a suggested next action (e.g., "check gateway dashboard for settlement batch X")
-- [ ] Unit test: every record in the synthetic batch, after full pipeline run, is accounted for in either `matches` or `exceptions` — assert `len(matches) + len(exceptions) == total_records` as a hard invariant
+- [x] `classifier.py`: bucket every still-unresolved record into one of the named exception types (§12)
+- [x] Rule-based classification first (e.g., no candidate at all within date window → `MISSING_COUNTERPART`); LLM rationale only used to *explain*, not to *classify*, keeping this tier fast and deterministic
+- [x] Every exception gets: type, affected record IDs, a one-paragraph human-readable rationale, and a suggested next action (e.g., "check gateway dashboard for settlement batch X")
+- [x] Unit test: every record in the synthetic batch, after full pipeline run, is accounted for in either `matches` or `exceptions` — assert `len(matches) + len(exceptions) == total_records` as a hard invariant
 
 **Deliverable:** A complete, typed exception report — zero unaccounted-for records.
+
+**Actual result (`backend/tests/test_pipeline_golden.py`, run over the committed seed=42/count=200 sample with a deterministic fake LLM client — no real API calls):** the invariant `resolved + len(exceptions) == 200` holds exactly. Breakdown on the real data (`python scripts/run_pipeline.py`, Tier 1 + Tier 2 only, no `--use-llm`): 152 Tier 1 matches, 38 records still pending Tier 3/4 (not force-classified — see below), and exactly 10 classified now: 8 `MISSING_COUNTERPART` + 2 `AMOUNT_MISMATCH_BEYOND_TOLERANCE`. All 10 correspond exactly to the ground truth's 10 `missing_counterpart` records — the classifier found every one of them, though 2 got a technically-defensible-but-slightly-generous `AMOUNT_MISMATCH_BEYOND_TOLERANCE` label instead of `MISSING_COUNTERPART`: a coincidental, unrelated leftover record from a *different* transaction happened to land in their date window with a partially-correlated (not zero, not close) amount score. Exact-zero amount scores are caught and routed to `MISSING_COUNTERPART` instead (see `classifier.py`'s amount-mismatch check), but a moderate coincidental score can still slip through; this is a known, documented limitation, not a bug to silently paper over.
+
+Design decision worth recording: records Tier 2 escalated to Tier 3 (`ESCALATE_TIER3`) are reported as **pending**, not force-classified, when `--use-llm` isn't used — classifying them without ever asking the LLM would be guessing at a disposition the pipeline hasn't actually reached, which contradicts Golden Rule #2. The invariant only applies to the *fully run* pipeline (Tier 1 → 4); `pending_llm_count` must be 0 for it to hold, which the golden test confirms by driving every escalation to a terminal Tier 3/4 outcome with a deterministic fake client.
 
 **Definition of done:** The invariant test above passes on every run, and is wired into CI (or at minimum, run before every commit).
 

@@ -150,6 +150,29 @@ def test_amount_mismatch_beyond_tolerance():
     assert "40.0" in result.rationale
 
 
+def test_zero_amount_score_is_missing_counterpart_not_amount_mismatch():
+    """A candidate with amount_score exactly 0 (wildly different amount) is
+    not "the right transaction with a slightly wrong amount" — it's more
+    honestly no plausible candidate at all, e.g. an unrelated leftover row
+    from a different transaction that happened to land in the date window."""
+    zero_score = ScoreBreakdown(
+        amount_score=0.0, date_score=80.0, narration_score=20.0, total=35.0
+    )
+    tier2 = FuzzyMatchResult(
+        ledger_id="TXN-000001",
+        side="bank",
+        candidate_id="0000314",
+        score=zero_score,
+        outcome="NO_CANDIDATE",
+        reason="test fixture",
+    )
+
+    result = classify_bank_only(tier2, bank_pool=[])
+
+    assert result.exception_type == "MISSING_COUNTERPART"
+    assert "0000314" not in result.affected_ids
+
+
 def test_timing_drift_exceeded_when_exact_amount_match_found_outside_window():
     far_candidate = bank("0000099", date="2026-06-15", amount="1000.00")  # 14 days out
 

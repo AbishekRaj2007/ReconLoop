@@ -1,15 +1,14 @@
-"""Run the reconciliation pipeline over data/raw (plan.md §9 Phases 2 + 3).
+"""Run the reconciliation pipeline over data/raw (plan.md §9 Phases 2-4).
 
-Tier 1 + Tier 2 (deterministic) always run. Tier 3 + Tier 4 (LLM
-adjudication) only run with --use-llm, since they need real GROQ_API_KEY /
-ANTHROPIC_API_KEY credentials and cost real money per call — see CLAUDE.md:
-"don't burn API calls in CI." Without --use-llm, records Tier 2 escalated
-are reported as pending Tier 3/4, not guessed at.
+Tier 1 + Tier 2 (deterministic) and the exception classifier always run.
+Tier 3 + Tier 4 (LLM adjudication) only run with --use-llm, since they need
+real GROQ_API_KEY / ANTHROPIC_API_KEY credentials and cost real money per
+call — see CLAUDE.md: "don't burn API calls in CI."
 
-The exception classifier (Phase 4) and persistence (Phase 6) don't exist
-yet, so LOW_CONFIDENCE_AMBIGUOUS / NO_MATCH / LLM_OUTPUT_UNPARSEABLE are
-reported as outcome counts here, not yet bucketed into a named exception
-report.
+Without --use-llm, records Tier 2 escalated are reported as pending Tier
+3/4, not force-classified — the invariant `matches + exceptions == total`
+only holds once every escalation has actually reached a terminal Tier 3/4
+outcome (real or, in tests, a deterministic fake).
 """
 
 from __future__ import annotations
@@ -17,6 +16,7 @@ from __future__ import annotations
 import argparse
 import csv
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
@@ -25,8 +25,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 from app.core.config import MatchingConfig, load_matching_config
+from app.core.exceptions.classifier import ExceptionRecord, classify_record
 from app.core.matcher.exact_match import match_exact
-from app.core.matcher.fuzzy_match import match_fuzzy
+from app.core.matcher.fuzzy_match import FuzzyMatchResult, match_fuzzy
 from app.core.matcher.llm_adjudicator import (
     AdjudicationOutcome,
     LLMClient,
@@ -35,7 +36,6 @@ from app.core.matcher.llm_adjudicator import (
 )
 
 SIDES = ("bank", "gateway")
-MATCHED_STATES = {"AUTO_MATCH", "MATCH"}
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -56,22 +56,29 @@ def run_tier1_and_tier2(
     bank_rows: list[dict],
     gateway_rows: list[dict],
     config: MatchingConfig,
-) -> tuple[int, dict[str, dict[str, str]], list[Escalation], dict[str, dict]]:
-    """Returns (tier1_matched_count, side_status_by_ledger_id, escalations,
-    ledger_row_by_id)."""
+) -> tuple[
+    int,
+    dict[str, dict[str, FuzzyMatchResult]],
+    list[Escalation],
+    dict[str, dict],
+    list[dict],
+    list[dict],
+]:
+    """Returns (tier1_matched_count, tier2_results_by_ledger_id, escalations,
+    ledger_row_by_id, remaining_bank_rows, remaining_gateway_rows)."""
     tier1 = match_exact(ledger_rows, bank_rows, gateway_rows)
 
     consumed_bank_ids = {bid for m in tier1.matches for bid in m.bank_ids}
     consumed_gateway_ids = {gid for m in tier1.matches for gid in m.gateway_ids}
+    remaining_bank_rows = [
+        r for r in bank_rows if r["bank_id"] not in consumed_bank_ids
+    ]
+    remaining_gateway_rows = [
+        r for r in gateway_rows if r["gateway_id"] not in consumed_gateway_ids
+    ]
     pools = {
-        "bank": (
-            [r for r in bank_rows if r["bank_id"] not in consumed_bank_ids],
-            "bank_id",
-        ),
-        "gateway": (
-            [r for r in gateway_rows if r["gateway_id"] not in consumed_gateway_ids],
-            "gateway_id",
-        ),
+        "bank": (remaining_bank_rows, "bank_id"),
+        "gateway": (remaining_gateway_rows, "gateway_id"),
     }
     row_by_id = {
         side: {row[id_field]: row for row in rows}
@@ -79,17 +86,17 @@ def run_tier1_and_tier2(
     }
     ledger_by_id = {row["ledger_id"]: row for row in ledger_rows}
 
-    side_status: dict[str, dict[str, str]] = {}
+    tier2_results: dict[str, dict[str, FuzzyMatchResult]] = {}
     escalations: list[Escalation] = []
 
     for ledger_id in tier1.unmatched_ledger_ids:
         ledger_row = ledger_by_id[ledger_id]
-        side_status[ledger_id] = {}
+        tier2_results[ledger_id] = {}
         for side, (pool_rows, id_field) in pools.items():
             result = match_fuzzy(
                 ledger_row, pool_rows, side=side, id_field=id_field, config=config
             )
-            side_status[ledger_id][side] = result.outcome
+            tier2_results[ledger_id][side] = result
             if result.outcome == "ESCALATE_TIER3":
                 escalations.append(
                     Escalation(
@@ -100,14 +107,13 @@ def run_tier1_and_tier2(
                     )
                 )
 
-    return len(tier1.matches), side_status, escalations, ledger_by_id
-
-
-def _fully_resolved_count(side_status: dict[str, dict[str, str]]) -> int:
-    return sum(
-        1
-        for statuses in side_status.values()
-        if all(statuses.get(side) in MATCHED_STATES for side in SIDES)
+    return (
+        len(tier1.matches),
+        tier2_results,
+        escalations,
+        ledger_by_id,
+        remaining_bank_rows,
+        remaining_gateway_rows,
     )
 
 
@@ -131,6 +137,64 @@ def run_llm_tiers(
     return outcomes
 
 
+def classify_unresolved(
+    tier2_results: dict[str, dict[str, FuzzyMatchResult]],
+    llm_outcomes: dict[str, dict[str, AdjudicationOutcome]],
+    ledger_by_id: dict[str, dict],
+    remaining_bank_rows: list[dict],
+    remaining_gateway_rows: list[dict],
+    config: MatchingConfig,
+) -> tuple[int, int, list[ExceptionRecord]]:
+    """Partitions every Tier-1-unmatched ledger record into resolved (both
+    sides matched, whether by Tier 2 or Tier 3/4), pending (still waiting on
+    an escalation that hasn't been adjudicated), or a classified exception.
+
+    Returns (resolved_count, pending_count, exceptions).
+    """
+    resolved_count = 0
+    pending_count = 0
+    exceptions: list[ExceptionRecord] = []
+
+    for ledger_id, sides in tier2_results.items():
+        bank_result = sides["bank"]
+        gateway_result = sides["gateway"]
+        bank_llm = llm_outcomes.get(ledger_id, {}).get("bank")
+        gateway_llm = llm_outcomes.get(ledger_id, {}).get("gateway")
+
+        bank_matched = bank_result.outcome == "AUTO_MATCH" or (
+            bank_llm is not None and bank_llm.final_outcome == "MATCH"
+        )
+        gateway_matched = gateway_result.outcome == "AUTO_MATCH" or (
+            gateway_llm is not None and gateway_llm.final_outcome == "MATCH"
+        )
+        if bank_matched and gateway_matched:
+            resolved_count += 1
+            continue
+
+        bank_pending = bank_result.outcome == "ESCALATE_TIER3" and bank_llm is None
+        gateway_pending = (
+            gateway_result.outcome == "ESCALATE_TIER3" and gateway_llm is None
+        )
+        if bank_pending or gateway_pending:
+            pending_count += 1
+            continue
+
+        exceptions.append(
+            classify_record(
+                ledger_by_id[ledger_id],
+                remaining_bank_rows,
+                remaining_gateway_rows,
+                bank_result,
+                gateway_result,
+                bank_llm,
+                gateway_llm,
+                config,
+            )
+        )
+
+    return resolved_count, pending_count, exceptions
+
+
 def run_pipeline(
     raw_dir: Path,
     config_path: Path,
@@ -143,11 +207,72 @@ def run_pipeline(
     bank_rows = read_csv(raw_dir / "bank_statement.csv")
     gateway_rows = read_csv(raw_dir / "gateway_settlement.csv")
 
-    tier1_matched, side_status, escalations, ledger_by_id = run_tier1_and_tier2(
-        ledger_rows, bank_rows, gateway_rows, config
+    (
+        tier1_matched,
+        tier2_results,
+        escalations,
+        ledger_by_id,
+        remaining_bank_rows,
+        remaining_gateway_rows,
+    ) = run_tier1_and_tier2(ledger_rows, bank_rows, gateway_rows, config)
+
+    tier2_fully_resolved = sum(
+        1
+        for sides in tier2_results.values()
+        if all(sides[side].outcome == "AUTO_MATCH" for side in SIDES)
     )
-    tier2_fully_resolved = _fully_resolved_count(side_status)
     total = len(ledger_rows)
+
+    llm_outcomes: dict[str, dict[str, AdjudicationOutcome]] = {}
+    llm_stats: dict | None = None
+
+    if use_llm:
+        if tier3_client is None or tier4_client is None:
+            from app.core.matcher.llm_clients import AnthropicLLMClient, GroqLLMClient
+
+            tier3_client = tier3_client or GroqLLMClient(model=config.llm.tier3.model)
+            tier4_client = tier4_client or AnthropicLLMClient(
+                model=config.llm.tier4.model
+            )
+
+        outcome_counts = {
+            "MATCH": 0,
+            "NO_MATCH": 0,
+            "LOW_CONFIDENCE_AMBIGUOUS": 0,
+            "LLM_OUTPUT_UNPARSEABLE": 0,
+        }
+        tier4_used = 0
+        total_cost = Decimal(0)
+        total_calls = 0
+
+        for outcome in run_llm_tiers(
+            escalations, ledger_by_id, config, tier3_client, tier4_client
+        ):
+            outcome_counts[outcome.final_outcome] += 1
+            llm_outcomes.setdefault(outcome.ledger_id, {})[outcome.side] = outcome
+            if "TIER_4" in outcome.tiers_used:
+                tier4_used += 1
+            total_calls += len(outcome.audit_log)
+            total_cost += sum(
+                (e.estimated_cost_usd for e in outcome.audit_log), Decimal(0)
+            )
+
+        llm_stats = {
+            "llm_outcome_counts": outcome_counts,
+            "tier4_used_count": tier4_used,
+            "total_llm_calls": total_calls,
+            "total_llm_cost_usd": total_cost,
+        }
+
+    resolved_count, pending_count, exceptions = classify_unresolved(
+        tier2_results,
+        llm_outcomes,
+        ledger_by_id,
+        remaining_bank_rows,
+        remaining_gateway_rows,
+        config,
+    )
+    resolved = tier1_matched + resolved_count
 
     report: dict = {
         "total": total,
@@ -156,54 +281,23 @@ def run_pipeline(
         "tier2_escalate_sides": len(escalations),
         "tier2_no_candidate_sides": sum(
             1
-            for statuses in side_status.values()
-            for outcome in statuses.values()
-            if outcome == "NO_CANDIDATE"
+            for sides in tier2_results.values()
+            for result in sides.values()
+            if result.outcome == "NO_CANDIDATE"
         ),
+        "pending_llm_count": pending_count,
+        "exceptions": exceptions,
+        "exception_type_counts": Counter(e.exception_type for e in exceptions),
     }
 
     if not use_llm:
-        resolved = tier1_matched + tier2_fully_resolved
-        report["unresolved_after_tier2"] = len(side_status) - tier2_fully_resolved
+        report["unresolved_after_tier2"] = len(tier2_results) - tier2_fully_resolved
         report["first_pass_match_rate"] = resolved / total if total else 0.0
         return report
 
-    if tier3_client is None or tier4_client is None:
-        from app.core.matcher.llm_clients import AnthropicLLMClient, GroqLLMClient
-
-        tier3_client = tier3_client or GroqLLMClient(model=config.llm.tier3.model)
-        tier4_client = tier4_client or AnthropicLLMClient(model=config.llm.tier4.model)
-
-    llm_side_status = {lid: dict(statuses) for lid, statuses in side_status.items()}
-    outcome_counts = {
-        "MATCH": 0,
-        "NO_MATCH": 0,
-        "LOW_CONFIDENCE_AMBIGUOUS": 0,
-        "LLM_OUTPUT_UNPARSEABLE": 0,
-    }
-    tier4_used = 0
-    total_cost = Decimal(0)
-    total_calls = 0
-
-    for outcome in run_llm_tiers(
-        escalations, ledger_by_id, config, tier3_client, tier4_client
-    ):
-        outcome_counts[outcome.final_outcome] += 1
-        llm_side_status[outcome.ledger_id][outcome.side] = outcome.final_outcome
-        if "TIER_4" in outcome.tiers_used:
-            tier4_used += 1
-        total_calls += len(outcome.audit_log)
-        total_cost += sum((e.estimated_cost_usd for e in outcome.audit_log), Decimal(0))
-
-    llm_newly_resolved = _fully_resolved_count(llm_side_status) - tier2_fully_resolved
-    resolved = tier1_matched + tier2_fully_resolved + llm_newly_resolved
-
+    report.update(llm_stats)
     report.update(
         {
-            "llm_outcome_counts": outcome_counts,
-            "tier4_used_count": tier4_used,
-            "total_llm_calls": total_calls,
-            "total_llm_cost_usd": total_cost,
             "second_pass_resolved": resolved,
             "unresolved_after_tier4": total - resolved,
             "second_pass_match_rate": resolved / total if total else 0.0,
@@ -254,19 +348,26 @@ def main() -> None:
     if not args.use_llm:
         print(f"Unresolved after Tier 2:      {report['unresolved_after_tier2']}")
         print(f"First-pass match rate:        {report['first_pass_match_rate']:.1%}")
-        return
+        print(
+            f"Pending Tier 3/4 (run with --use-llm to resolve): {report['pending_llm_count']}"
+        )
+    else:
+        counts = report["llm_outcome_counts"]
+        print("--- LLM tiers (Tier 3 + Tier 4) ---")
+        print(f"LLM calls made:               {report['total_llm_calls']}")
+        print(f"Tier 4 escalations:           {report['tier4_used_count']}")
+        print(f"Estimated LLM cost (USD):     ${report['total_llm_cost_usd']:.4f}")
+        print(f"MATCH:                        {counts['MATCH']}")
+        print(f"NO_MATCH:                     {counts['NO_MATCH']}")
+        print(f"LOW_CONFIDENCE_AMBIGUOUS:     {counts['LOW_CONFIDENCE_AMBIGUOUS']}")
+        print(f"LLM_OUTPUT_UNPARSEABLE:       {counts['LLM_OUTPUT_UNPARSEABLE']}")
+        print(f"Unresolved after Tier 4:      {report['unresolved_after_tier4']}")
+        print(f"Second-pass match rate:       {report['second_pass_match_rate']:.1%}")
 
-    counts = report["llm_outcome_counts"]
-    print("--- LLM tiers (Tier 3 + Tier 4) ---")
-    print(f"LLM calls made:               {report['total_llm_calls']}")
-    print(f"Tier 4 escalations:           {report['tier4_used_count']}")
-    print(f"Estimated LLM cost (USD):     ${report['total_llm_cost_usd']:.4f}")
-    print(f"MATCH:                        {counts['MATCH']}")
-    print(f"NO_MATCH:                     {counts['NO_MATCH']}")
-    print(f"LOW_CONFIDENCE_AMBIGUOUS:     {counts['LOW_CONFIDENCE_AMBIGUOUS']}")
-    print(f"LLM_OUTPUT_UNPARSEABLE:       {counts['LLM_OUTPUT_UNPARSEABLE']}")
-    print(f"Unresolved after Tier 4:      {report['unresolved_after_tier4']}")
-    print(f"Second-pass match rate:       {report['second_pass_match_rate']:.1%}")
+    print("--- Exceptions (Phase 4 classifier) ---")
+    print(f"Total exceptions:             {len(report['exceptions'])}")
+    for exception_type, count in report["exception_type_counts"].most_common():
+        print(f"  {exception_type:<32} {count}")
 
 
 if __name__ == "__main__":
