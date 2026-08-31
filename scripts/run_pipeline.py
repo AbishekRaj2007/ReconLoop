@@ -323,6 +323,9 @@ def run_pipeline(
         "tier_attribution": Counter(m.tier for m in matches),
         "wall_clock_seconds": wall_clock_seconds,
         "records_per_second": total / wall_clock_seconds if wall_clock_seconds else 0.0,
+        "llm_outcomes": [
+            outcome for sides in llm_outcomes.values() for outcome in sides.values()
+        ],
     }
 
     if not use_llm:
