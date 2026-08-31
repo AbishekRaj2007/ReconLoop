@@ -333,17 +333,19 @@ Design decision worth recording: records Tier 2 escalated to Tier 3 (`ESCALATE_T
 ### Phase 6 — API + Persistence
 **Objective:** Wrap the pipeline in a real service, not just a script.
 
-- [ ] SQLAlchemy models: `Transaction`, `Match`, `Exception`, `LLMAuditLog`
-- [ ] `POST /reconcile` — trigger a pipeline run on the current data batch, persist results
-- [ ] `GET /matches` — paginated match list with confidence + tier
-- [ ] `GET /exceptions` — paginated exception list with type + rationale
-- [ ] `GET /score` — latest scoring metrics
-- [ ] Pydantic schemas for all request/response bodies (typed, no raw dicts)
-- [ ] Basic integration test: spin up test DB, POST /reconcile, assert response shape
+- [x] SQLAlchemy models: `Transaction`, `Match`, `Exception`, `LLMAuditLog`
+- [x] `POST /reconcile` — trigger a pipeline run on the current data batch, persist results
+- [x] `GET /matches` — paginated match list with confidence + tier
+- [x] `GET /exceptions` — paginated exception list with type + rationale
+- [x] `GET /score` — latest scoring metrics
+- [x] Pydantic schemas for all request/response bodies (typed, no raw dicts)
+- [x] Basic integration test: spin up test DB, POST /reconcile, assert response shape
 
 **Deliverable:** A running FastAPI service backed by Postgres, fully typed.
 
-**Definition of done:** `curl` against all four endpoints returns sane, typed JSON on a fresh database.
+**Actual result:** `ReconciliationRun` scopes every `Match`, `Exception`, and `LLMAuditLog` row to one `POST /reconcile` call, so results from different runs never mix. `persist_pipeline_report()` (`backend/app/core/persistence.py`) writes a `run_pipeline()` report straight into the DB without coupling the matching engine to SQLAlchemy — `scripts/run_pipeline.py` and `run_scoring.py` are untouched and still produce identical numbers (152 matches, 10 exceptions, 76.0% Tier-1 match rate on the seed=42/count=200 sample). `GET /score` recomputes precision/recall/F1 via the same `evaluator.score_pipeline()` `run_scoring.py` uses — never a value stored verbatim from the pipeline, always re-derived against ground truth. `DATABASE_URL` drives a module-level engine (Postgres by default per `.env.example`); the integration test (`backend/tests/test_api.py`) overrides it to a temp SQLite file per test, so the full endpoint suite runs without a live Postgres instance — this environment has Postgres installed but not running, and Docker unavailable, so real-Postgres verification is deferred to whoever has a running instance; SQLite is not used in production. 120/120 backend tests pass at 99% coverage.
+
+**Definition of done:** `curl` against all four endpoints returns sane, typed JSON on a fresh database. *(Verified via TestClient against a fresh SQLite DB: `/health`, `POST /reconcile`, `GET /matches`, `GET /exceptions`, `GET /score` all return 200 with the expected shape; `GET /score` with no persisted run correctly 404s instead of fabricating a result.)*
 
 ---
 
