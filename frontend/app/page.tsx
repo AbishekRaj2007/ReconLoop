@@ -6,9 +6,10 @@ import { useAsyncResource } from "./lib/useAsync";
 import SummaryCards from "./components/SummaryCards";
 import TierChart from "./components/TierChart";
 import ExceptionTable from "./components/ExceptionTable";
+import ReconcileButton from "./components/ReconcileButton";
 
 export default function Home() {
-  const { data: score, error, loading } = useAsyncResource(fetchScore);
+  const { data: score, error, loading, reload: reloadScore } = useAsyncResource(fetchScore);
 
   const runId = score?.run_id ?? null;
   const loadExceptions = useCallback(() => fetchExceptions(runId!), [runId]);
@@ -17,13 +18,16 @@ export default function Home() {
   return (
     <div className="min-h-full bg-zinc-50 dark:bg-black">
       <main className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            ReconLoop
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Multi-source reconciliation — ledger, bank, gateway settlement
-          </p>
+        <header className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+              ReconLoop
+            </h1>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              Multi-source reconciliation — ledger, bank, gateway settlement
+            </p>
+          </div>
+          <ReconcileButton onDone={reloadScore} />
         </header>
 
         {loading && (
