@@ -17,8 +17,14 @@ export function fetchScore(): Promise<ScoreResponse> {
   return apiFetch<ScoreResponse>("/score");
 }
 
-export function fetchExceptions(page = 1, pageSize = 100): Promise<ExceptionListResponse> {
-  return apiFetch<ExceptionListResponse>(`/exceptions?page=${page}&page_size=${pageSize}`);
+export function fetchExceptions(
+  runId: string,
+  page = 1,
+  pageSize = 500
+): Promise<ExceptionListResponse> {
+  return apiFetch<ExceptionListResponse>(
+    `/exceptions?run_id=${encodeURIComponent(runId)}&page=${page}&page_size=${pageSize}`
+  );
 }
 
 export function triggerReconcile(useLlm: boolean): Promise<ReconcileResponse> {

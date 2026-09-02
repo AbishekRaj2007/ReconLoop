@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface AsyncState<T> {
   data: T | null;
@@ -6,10 +6,18 @@ interface AsyncState<T> {
   loading: boolean;
 }
 
-export function useAsyncResource<T>(fetcher: () => Promise<T>) {
+/**
+ * Fetches `fetcher()` on mount and whenever `deps` change. Pass `null` for
+ * `fetcher` to skip fetching (e.g. while a dependency like a run id isn't
+ * known yet) — state stays in `loading` until a non-null fetcher is given.
+ * Returns a `reload` function to re-run the same fetch on demand.
+ */
+export function useAsyncResource<T>(fetcher: (() => Promise<T>) | null, deps: unknown[] = []) {
   const [state, setState] = useState<AsyncState<T>>({ data: null, error: null, loading: true });
+  const [reloadToken, setReloadToken] = useState(0);
 
-  const reload = useCallback(() => {
+  useEffect(() => {
+    if (!fetcher) return;
     Promise.resolve()
       .then(() => {
         setState((prev) => ({ ...prev, loading: true, error: null }));
@@ -24,12 +32,7 @@ export function useAsyncResource<T>(fetcher: () => Promise<T>) {
         })
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [...deps, reloadToken]);
 
-  useEffect(() => {
-    reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return { ...state, reload };
+  return { ...state, reload: () => setReloadToken((n) => n + 1) };
 }

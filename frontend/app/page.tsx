@@ -1,12 +1,18 @@
 "use client";
 
-import { fetchScore } from "./lib/api";
+import { useCallback } from "react";
+import { fetchExceptions, fetchScore } from "./lib/api";
 import { useAsyncResource } from "./lib/useAsync";
 import SummaryCards from "./components/SummaryCards";
 import TierChart from "./components/TierChart";
+import ExceptionTable from "./components/ExceptionTable";
 
 export default function Home() {
   const { data: score, error, loading } = useAsyncResource(fetchScore);
+
+  const runId = score?.run_id ?? null;
+  const loadExceptions = useCallback(() => fetchExceptions(runId!), [runId]);
+  const { data: exceptionPage } = useAsyncResource(runId ? loadExceptions : null, [runId]);
 
   return (
     <div className="min-h-full bg-zinc-50 dark:bg-black">
@@ -36,6 +42,7 @@ export default function Home() {
           <>
             <SummaryCards score={score} />
             <TierChart tierAttribution={score.tier_attribution} />
+            {exceptionPage && <ExceptionTable exceptions={exceptionPage.items} />}
           </>
         )}
       </main>
