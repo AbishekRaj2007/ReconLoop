@@ -3,6 +3,7 @@
 import { fetchScore } from "./lib/api";
 import { useAsyncResource } from "./lib/useAsync";
 import SummaryCards from "./components/SummaryCards";
+import TierChart from "./components/TierChart";
 
 export default function Home() {
   const { data: score, error, loading } = useAsyncResource(fetchScore);
@@ -31,7 +32,12 @@ export default function Home() {
           </div>
         )}
 
-        {score && <SummaryCards score={score} />}
+        {score && (
+          <>
+            <SummaryCards score={score} />
+            <TierChart tierAttribution={score.tier_attribution} />
+          </>
+        )}
       </main>
     </div>
   );
