@@ -31,7 +31,9 @@ class _MatchRow:
 
 
 @router.get("/score", response_model=ScoreResponse)
-def latest_score(run_id: str | None = None, db: Session = Depends(get_db)) -> ScoreResponse:
+def latest_score(
+    run_id: str | None = None, db: Session = Depends(get_db)
+) -> ScoreResponse:
     stmt = select(ReconciliationRun)
     if run_id is not None:
         stmt = stmt.where(ReconciliationRun.id == run_id)
@@ -46,9 +48,7 @@ def latest_score(run_id: str | None = None, db: Session = Depends(get_db)) -> Sc
     ground_truth = json.loads(GROUND_TRUTH_PATH.read_text())
     scoring = score_pipeline(ground_truth, matches, run.total_records)
     exception_count = len(
-        db.scalars(
-            select(ExceptionModel).where(ExceptionModel.run_id == run.id)
-        ).all()
+        db.scalars(select(ExceptionModel).where(ExceptionModel.run_id == run.id)).all()
     )
 
     return ScoreResponse(

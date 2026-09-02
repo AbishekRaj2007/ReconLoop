@@ -9,7 +9,7 @@ endpoints.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from sqlalchemy import JSON, DateTime, ForeignKey, Numeric, String, Text
@@ -27,7 +27,7 @@ class ReconciliationRun(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(tz=None)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
     used_llm: Mapped[bool] = mapped_column(default=False)
     total_records: Mapped[int] = mapped_column(default=0)
@@ -38,13 +38,13 @@ class ReconciliationRun(Base):
         Numeric(12, 6), default=Decimal(0)
     )
 
-    matches: Mapped[list["Match"]] = relationship(
+    matches: Mapped[list[Match]] = relationship(
         back_populates="run", cascade="all, delete-orphan"
     )
-    exceptions: Mapped[list["Exception"]] = relationship(
+    exceptions: Mapped[list[Exception]] = relationship(
         back_populates="run", cascade="all, delete-orphan"
     )
-    llm_audit_logs: Mapped[list["LLMAuditLog"]] = relationship(
+    llm_audit_logs: Mapped[list[LLMAuditLog]] = relationship(
         back_populates="run", cascade="all, delete-orphan"
     )
 
@@ -73,7 +73,9 @@ class Match(Base):
     ledger_id: Mapped[str] = mapped_column(String)
     bank_ids: Mapped[list[str]] = mapped_column(JSON)
     gateway_ids: Mapped[list[str]] = mapped_column(JSON)
-    tier: Mapped[str] = mapped_column(String)  # "TIER_1" | "TIER_2" | "TIER_3" | "TIER_4"
+    tier: Mapped[str] = mapped_column(
+        String
+    )  # "TIER_1" | "TIER_2" | "TIER_3" | "TIER_4"
 
     run: Mapped[ReconciliationRun] = relationship(back_populates="matches")
 

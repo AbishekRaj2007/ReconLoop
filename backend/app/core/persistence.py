@@ -15,7 +15,9 @@ from app.models import Exception as ExceptionModel
 from app.models import LLMAuditLog, Match, ReconciliationRun
 
 
-def persist_pipeline_report(db: Session, report: dict, use_llm: bool) -> ReconciliationRun:
+def persist_pipeline_report(
+    db: Session, report: dict, use_llm: bool
+) -> ReconciliationRun:
     run = ReconciliationRun(
         used_llm=use_llm,
         total_records=report["total"],
