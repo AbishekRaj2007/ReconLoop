@@ -370,16 +370,18 @@ Design decision worth recording: records Tier 2 escalated to Tier 3 (`ESCALATE_T
 ### Phase 8 — Polish, Docs, Demo Prep
 **Objective:** Make the repo and the pitch as legible as the code.
 
-- [ ] `README.md`: one-liner, architecture diagram (from §5), setup instructions, how to run the demo, how to regenerate data
-- [ ] `docs/architecture.md`: expanded version of §5 with the "why" for each tier
-- [ ] `docs/demo_script.md`: exact script for the 5-minute pitch (see §14)
-- [ ] Clean up dead code, remove hardcoded values into `matching_config.yaml`
-- [ ] Verify `.env.example` is complete and no real secrets are committed (double-check `git log` for accidental key commits)
-- [ ] Record a backup demo video/GIF in case live demo has issues on the day
+- [x] `README.md`: one-liner, architecture diagram (from §5), setup instructions, how to run the demo, how to regenerate data
+- [x] `docs/architecture.md`: expanded version of §5 with the "why" for each tier
+- [x] `docs/demo_script.md`: exact script for the 5-minute pitch (see §14)
+- [x] Clean up dead code, remove hardcoded values into `matching_config.yaml`
+- [x] Verify `.env.example` is complete and no real secrets are committed (double-check `git log` for accidental key commits)
+- [ ] Record a backup demo video/GIF in case live demo has issues on the day — **manual step, not done by an agent**: needs someone driving the actual dashboard on camera. `docs/demo_script.md` has the walkthrough to record.
 
 **Deliverable:** A repo a stranger can understand in 10 minutes without you in the room.
 
 **Definition of done:** Ask someone (classmate, senior) with no context to read the README and explain the project back to you correctly.
+
+**Actual result:** README now includes an architecture diagram, dashboard usage (including the `Run reconciliation` button and `.env.local` setup), and links to the new docs. `docs/architecture.md` expands plan.md §5 with the "why" behind each tier, including two documented non-obvious results (Tier 2's 0% auto-match rate on the sample data being by design, and the confidence-gate having no override path). `docs/demo_script.md` expands plan.md §14 into a rehearsable script with a fallback plan for a live-demo failure. Cleanup: fixed a real Golden-Rule-adjacent bug — `ReconciliationRun.created_at` was using `datetime.now(tz=None)` (naive local time) despite CLAUDE.md's "dates are always UTC" rule and a `DateTime(timezone=True)` column; changed to `datetime.now(UTC)`. Applied `black` formatting (3 files) and removed unused create-next-app scaffold SVGs from `frontend/public/`. Confirmed via `ruff check` that the only remaining findings are FastAPI's standard `Depends()`-in-default-argument idiom (false positives for this framework, not bugs). No secrets found in the working tree or full git history (`git log --all -p` scanned for common API key patterns). All 120 backend tests still pass at 99% coverage after the cleanup; `run_pipeline.py` / `run_scoring.py` reproduce the exact same numbers as before (152 matches, 76.0% Tier-1 rate, precision 1.000/recall 0.800/F1 0.889) — no regression.
 
 ---
 
