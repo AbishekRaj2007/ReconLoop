@@ -352,14 +352,16 @@ Design decision worth recording: records Tier 2 escalated to Tier 3 (`ESCALATE_T
 ### Phase 7 — Dashboard
 **Objective:** A judge should understand the whole system in 15 seconds of looking at the screen.
 
-- [ ] Match-rate summary card (overall %, by tier, by source pair)
-- [ ] Throughput card (records/sec, total time, LLM calls made)
-- [ ] Exception table: filterable by type, expandable to show rationale + record details
-- [ ] A "false-match rate" callout — make it visible, don't bury it, this is a trust signal
-- [ ] Trigger button to re-run reconciliation on demand (calls `/reconcile`)
-- [ ] Recharts: bar chart of match tier breakdown, line/bar of throughput per run
+- [x] Match-rate summary card (overall %, by tier, by source pair)
+- [x] Throughput card (records/sec, total time, LLM calls made)
+- [x] Exception table: filterable by type, expandable to show rationale + record details
+- [x] A "false-match rate" callout — make it visible, don't bury it, this is a trust signal
+- [x] Trigger button to re-run reconciliation on demand (calls `/reconcile`)
+- [x] Recharts: bar chart of match tier breakdown, line/bar of throughput per run
 
 **Deliverable:** A single-page dashboard that tells the whole story without narration.
+
+**Actual result:** `frontend/app/page.tsx` is a single client-rendered page: `GET /score` on load populates a summary-card row (match rate, throughput, exception count, and a visually distinct amber false-match-rate callout — CLAUDE.md/Golden Rule #2's "a false match is worse than a missed one" made literal in the UI), a Recharts horizontal bar chart of per-tier match attribution (`score.tier_attribution`), and a filterable/expandable exception table fetched from `GET /exceptions?run_id=<latest>` (type dropdown, click-to-expand rationale + suggested action + affected IDs). A "Run reconciliation" button calls `POST /reconcile` and reloads the score, which cascades to reload exceptions for the new run id. CORS (`backend/app/main.py`) now allows `http://localhost:3000` so the dashboard can call the FastAPI service directly — no proxy layer. No dedicated throughput *chart* was built: the API has no run-history endpoint, so a single latest-run data point isn't a meaningful time series; throughput (rec/s, wall-clock, LLM calls/cost) is reported in the stat-card row instead, consistent with plan.md's data being real, not padded with a decorative chart of one point. Verified against a live FastAPI instance (SQLite override, no local Postgres in this environment) and `next dev`: `/health`, `/reconcile`, `/score`, `/exceptions` all return real data, CORS preflight succeeds, `tsc --noEmit` and `next lint` are clean.
 
 **Definition of done:** Someone who has never seen the project can open the dashboard and correctly explain what happened in the last run.
 
